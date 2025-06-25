@@ -11,7 +11,9 @@
 		90459F992DE24C2A0045BAB9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90459F982DE24C2A0045BAB9 /* ContentView.swift */; };
 		90459F9B2DE24C2B0045BAB9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 90459F9A2DE24C2B0045BAB9 /* Assets.xcassets */; };
 		90459F9E2DE24C2B0045BAB9 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 90459F9D2DE24C2B0045BAB9 /* Preview Assets.xcassets */; };
-		AAF4370B2DEB7DC40034AD84 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF4370A2DEB7DC30034AD84 /* StatsView.swift */; };
+
+		905579232DE7C75B00068FAE /* NavigationTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905579222DE7C75B00068FAE /* NavigationTabs.swift */; };
+
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,7 +22,9 @@
 		90459F982DE24C2A0045BAB9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		90459F9A2DE24C2B0045BAB9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		90459F9D2DE24C2B0045BAB9 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		AAF4370A2DEB7DC30034AD84 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+
+		905579222DE7C75B00068FAE /* NavigationTabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationTabs.swift; sourceTree = "<group>"; };
+
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +61,7 @@
 				90459F982DE24C2A0045BAB9 /* ContentView.swift */,
 				AAF4370A2DEB7DC30034AD84 /* StatsView.swift */,
 				90459F9A2DE24C2B0045BAB9 /* Assets.xcassets */,
+				905579222DE7C75B00068FAE /* NavigationTabs.swift */,
 				90459F9C2DE24C2B0045BAB9 /* Preview Content */,
 			);
 			path = "CoderSchool working towards congrsional app challenge";
@@ -142,7 +147,9 @@
 			files = (
 				90459F992DE24C2A0045BAB9 /* ContentView.swift in Sources */,
 				90459F972DE24C2A0045BAB9 /* CoderSchool_working_towards_congrsional_app_challengeApp.swift in Sources */,
-				AAF4370B2DEB7DC40034AD84 /* StatsView.swift in Sources */,
+
+				905579232DE7C75B00068FAE /* NavigationTabs.swift in Sources */,
+
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

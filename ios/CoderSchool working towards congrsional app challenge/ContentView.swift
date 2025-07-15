@@ -142,6 +142,7 @@ struct StatisticfeatureScreen: View {
     
     
 struct ReviewScreen: View {
+    @State private var showPassword = false
     let onboarding: Onboarding
 
     var body: some View {
@@ -166,17 +167,34 @@ struct ReviewScreen: View {
                 Text("Age: \(onboarding.age.value)")
                     .font(.headline)
                     .foregroundColor(.white)
+                Text("Name: \(onboarding.name.name2)").font(.headline)
+                    .foregroundColor(.white)
 
                 Text("Username: \(onboarding.username.name)")
                     .font(.headline)
                     .foregroundColor(.white)
+                HStack {
+                    Text("Password: ")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    
+                    Text(showPassword ? onboarding.password.password : String(repeating: "•", count: onboarding.password.password.count))
+                        .foregroundColor(.white.opacity(0.9))
+                    
+                    Button(action: {
+                        showPassword.toggle()
+                    }) {
+                        Image(systemName: showPassword ? "eye.slash.fill" : "eye.fill")
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                }
             }
 
             Spacer()
         }
         .padding()
         .background(Color.cyan.ignoresSafeArea())
-    }
+   }
 }
     
     struct RestrictedAppsView: View {
@@ -268,7 +286,12 @@ struct AgeView: View {
         }
         .padding()
         .background(Color.cyan.ignoresSafeArea())
+
+        
+        
+
     }
+    
 }
 struct UsernameView: View {
     @Binding var username: Onboarding.Username
@@ -306,6 +329,7 @@ struct UsernameView: View {
 }
 
 struct PasswordView: View {
+    @State private var showPassword = false
     @Binding var password: Onboarding.Password
     
     var body: some View {
@@ -325,13 +349,30 @@ struct PasswordView: View {
                 .font(.system(size: 28, weight: .bold))
                 .foregroundColor(.white)
             
-            TextField("Password", text: $password.password).foregroundColor(.cyan)
-                .textFieldStyle(.plain)
-                .padding()
-                .background(Color.white)
-                .cornerRadius(12)
-                .padding(.horizontal)
-                .font(.title2)
+            if showPassword {
+                TextField("Password", text: $password.password).foregroundColor(.cyan)
+                    .textFieldStyle(.plain)
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(12)
+                    .padding(.horizontal)
+                    .font(.title2)
+            } else {
+                SecureField("Password", text: $password.password).foregroundColor(.cyan)
+                    .textFieldStyle(.plain)
+                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(12)
+                    .padding(.horizontal)
+                    .font(.title2)
+            }
+
+            Button(action: {
+                showPassword.toggle()
+            }) {
+                Image(systemName: showPassword ? "eye.slash.fill" : "eye.fill")
+                    .foregroundColor(.white.opacity(0.7))
+            }
             
             Spacer().frame(height: 18)
         }

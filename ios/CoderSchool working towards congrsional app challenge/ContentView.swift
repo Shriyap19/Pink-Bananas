@@ -14,7 +14,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
     case statisticfeatures
     case goalfeatures
     case restrictedApps
-    case age
+    case birthday
     case name
     case username
     case password
@@ -32,7 +32,7 @@ struct AppItem: Identifiable, Hashable {
     struct Onboarding {
         
         var restrictedApps = RestrictedApps()
-        var age = Age()
+        var birthday = Birthday()
         var username = Username()
         var name = Name()
         var password = Password()
@@ -43,8 +43,8 @@ struct AppItem: Identifiable, Hashable {
             var selectedApps: [AppItem] = []
         }
         
-        struct Age {
-            var value: Int = 0
+        struct Birthday {
+            var value = Date()
         }
         struct Username {
             var name: String = ""
@@ -164,7 +164,7 @@ struct ReviewScreen: View {
                     .background(Color.white.opacity(0.2))
                     .cornerRadius(12)
 
-                Text("Age: \(onboarding.age.value)")
+                Text("Birthday: \(onboarding.birthday.value, style: .date)")
                     .font(.headline)
                     .foregroundColor(.white)
                 Text("Name: \(onboarding.name.name2)").font(.headline)
@@ -254,8 +254,8 @@ struct ReviewScreen: View {
            
         }
     
-struct AgeView: View {
-    @Binding var age: Onboarding.Age
+struct BirthdayView: View {
+    @Binding var birthday: Onboarding.Birthday
 
     var body: some View {
         VStack(spacing: 24) {
@@ -270,11 +270,11 @@ struct AgeView: View {
                 .cornerRadius(20)
             Spacer().frame(height: 18)
 
-            Text("Enter Your Age")
+            Text("Enter Your Birthday")
                 .font(.system(size: 28, weight: .bold))
                 .foregroundColor(.white)
-
-            TextField("Age", value: $age.value, format: .number).foregroundColor(.cyan)
+            DatePicker("Birthday", selection: $birthday.value, in:...Date(), displayedComponents: .date).datePickerStyle(.wheel)
+                .foregroundColor(.cyan)
                 .keyboardType(.numberPad)
                 .padding()
                 .background(Color.white)
@@ -497,8 +497,8 @@ struct NameView: View {
             switch step {
             case .restrictedApps:
                 RestrictedAppsView(restrictedApps: $onboarding.restrictedApps)
-            case .age:
-                AgeView(age: $onboarding.age)
+            case .birthday:
+                BirthdayView(birthday: $onboarding.birthday)
             case .username:
                 UsernameView(username: $onboarding.username)
             case .review:

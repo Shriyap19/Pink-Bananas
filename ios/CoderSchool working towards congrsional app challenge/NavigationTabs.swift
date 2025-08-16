@@ -16,16 +16,16 @@ struct NavigationTabs: View {
                     
                 }
                 
-                NavigationStack{
-                    GoalsPageView()
-                }
-               
-                    .tabItem { Image(systemName: "star")
-                        Text("Goals")
-                           
+                NavigationStack {
                     
+                        GoalsPageView()
                     
                 }
+                .tabItem {
+                    Image(systemName: "star")
+                    Text("Goals")
+                }
+                
                 Image(systemName: "chart.pie").tabItem { Image(systemName: "chart.pie")
                     Text("Statistics")
                 }

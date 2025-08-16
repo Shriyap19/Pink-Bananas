@@ -17,7 +17,7 @@ struct GoalsPageView: View {
     var body: some View {
         ZStack{
             Color.cyan
-                .ignoresSafeArea()
+               .ignoresSafeArea()
             
             ScrollViewReader { proxy in
                 ScrollView {
@@ -102,6 +102,18 @@ struct GoalsPageView: View {
                                         .background(Color.gray)
                                         .foregroundColor(.white)
                                         .cornerRadius(12)
+                                        
+                                        Button("X") {
+                                            if let index = allGoals.firstIndex(where: { $0.id == goal.id }) {
+                                                allGoals.remove(at: index)
+                                            }
+                                        }
+                                        .font(.system(size: 14, weight: .bold))
+                                        .frame(width: 28, height: 28)
+                                        .background(Color.red.opacity(0.7))
+                                        .foregroundColor(.white)
+                                        .cornerRadius(14)
+                    
                                     }
                                     
                                     HStack(spacing: 12) {

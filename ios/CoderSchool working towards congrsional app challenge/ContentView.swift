@@ -16,7 +16,9 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
     case restrictedApps
     case birthday
     case name
+    case email
     case username
+    case firstsurvey
     case password
     case review
     
@@ -36,6 +38,8 @@ struct AppItem: Identifiable, Hashable {
         var username = Username()
         var name = Name()
         var password = Password()
+        var email = Email()
+        var firstsurvey = FirstSurvey()
         
         
         
@@ -54,6 +58,12 @@ struct AppItem: Identifiable, Hashable {
         }
         struct Password {
             var password: String = ""
+        }
+        struct Email {
+            var email: String = ""
+        }
+        struct FirstSurvey {
+            var firstsurveyanswers: [String: String] = [:]
         }
     }
     
@@ -77,24 +87,86 @@ struct FeatureScreen: View {
             
         }
     }
-struct WelcomeScreen: View {
-        let onboarding: Onboarding
-        
-        var body: some View {
-            VStack {
-                Spacer().frame(height: 160)
-                Text("Welcome!!").font(.title).bold()
-                Spacer().frame(height: 10)
-                Text("New too the app? Countine through the introductory proccess! ").multilineTextAlignment(.center).padding(.horizontal)
-                Spacer().frame(height: 10)
-                Text("OR")
-                Spacer().frame(height: 10)
-                Text("Click the ______ below too log in")
-            }.frame(height:.infinity)
+
+struct EmailView: View {
+    @Binding var email: Onboarding.Email
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            Spacer()
             
+            Image(systemName: "envelope.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 250, height: 250)
+                .padding()
+                .background(Color.white.opacity(0.2))
+                .cornerRadius(20)
             
+            Spacer().frame(height: 18)
+            
+            Text("Enter Your Email")
+                .font(.system(size: 28, weight: .bold))
+                .foregroundColor(.white)
+            
+            TextField("Email", text: $email.email)
+                .keyboardType(.emailAddress)
+                .autocapitalization(.none)
+                .disableAutocorrection(true)
+                .foregroundColor(.cyan)
+                .textFieldStyle(.plain)
+                .padding()
+                .background(Color.white)
+                .cornerRadius(12)
+                .padding(.horizontal)
+                .font(.title2)
+            
+            Spacer().frame(height: 18)
         }
+        .padding()
+        .background(Color.cyan.ignoresSafeArea())
     }
+}
+struct WelcomeScreen: View {
+    let onboarding: Onboarding
+    @Binding var isLoggingIn: Bool
+
+    var body: some View {
+            VStack(spacing: 29) {
+                Spacer().frame(height: 160)
+
+                Text("Welcome!!")
+                    .font(.title).bold()
+                    .foregroundColor(.white)
+
+                Text("New to the app? Continue through the intro, or if you already have an account, log in here.")
+                    .multilineTextAlignment(.center)
+                    .foregroundColor(.white)
+                    .padding(.horizontal)
+
+                Button(action: {
+                    isLoggingIn = true
+                }) {
+                    Text("Log in")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, maxHeight: 55)
+                        .background(Color.white)
+                        .foregroundColor(.cyan)
+                        .cornerRadius(10)
+                }
+                .padding(.horizontal)
+                .padding(10)
+
+
+                
+                Spacer()
+            }
+            .background(Color.cyan.ignoresSafeArea())
+        
+    }
+}
+
+
     
 struct GoalfeatureScreen: View {
         let onboarding: Onboarding
@@ -157,22 +229,27 @@ struct ReviewScreen: View {
                 Text("Restricted Apps:")
                     .font(.headline)
                     .foregroundColor(.white)
-
+                
                 Text(Set(onboarding.restrictedApps.selectedApps).map { $0.name }.joined(separator: ", "))
                     .foregroundColor(.white.opacity(0.9))
                     .padding()
                     .background(Color.white.opacity(0.2))
                     .cornerRadius(12)
-
+                
                 Text("Birthday: \(onboarding.birthday.value, style: .date)")
                     .font(.headline)
                     .foregroundColor(.white)
                 Text("Name: \(onboarding.name.name2)").font(.headline)
                     .foregroundColor(.white)
-
+                
                 Text("Username: \(onboarding.username.name)")
                     .font(.headline)
                     .foregroundColor(.white)
+                
+                Text("Email: \(onboarding.email.email)")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                
                 HStack {
                     Text("Password: ")
                         .font(.headline)
@@ -188,6 +265,32 @@ struct ReviewScreen: View {
                             .foregroundColor(.white.opacity(0.7))
                     }
                 }
+                ScrollView {
+                    Text("Survey Answers:").font(.headline)
+                        .foregroundColor(.white)
+                    if !onboarding.firstsurvey.firstsurveyanswers.isEmpty {
+                                   Divider().background(.white)
+                                   
+                                   
+                                   VStack(alignment: .leading, spacing: 12) {
+                                       ForEach(onboarding.firstsurvey.firstsurveyanswers.sorted(by: { $0.key < $1.key }), id: \.key) { question, answer in
+                                           VStack(alignment: .leading, spacing: 4) {
+                                               Text(question)
+                                                   .font(.subheadline)
+                                                   .foregroundColor(.white.opacity(0.7))
+                                               Text(answer)
+                                                   .font(.body)
+                                                   .foregroundColor(.white)
+                                                   .padding(6)
+                                                   .background(Color.white.opacity(0.2))
+                                                   .cornerRadius(8)
+                                           }
+                                       }
+                                   }
+                               }
+                }
+               
+                
             }
 
             Spacer()
@@ -264,16 +367,19 @@ struct BirthdayView: View {
             Image("Age")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 250, height: 250)
+                .frame(width: 220, height: 160)
                 .padding()
                 .background(Color.white.opacity(0.2))
                 .cornerRadius(20)
-            Spacer().frame(height: 18)
+            Text("Disclaimer: you will not be able to edit your birthday later, BE HONEST").multilineTextAlignment(.center)
+                .lineLimit(nil)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal)
 
             Text("Enter Your Birthday")
                 .font(.system(size: 28, weight: .bold))
                 .foregroundColor(.white)
-            DatePicker("Birthday", selection: $birthday.value, in:...Date(), displayedComponents: .date).datePickerStyle(.wheel)
+            DatePicker("", selection: $birthday.value, in:...Date(), displayedComponents: .date).labelsHidden().datePickerStyle(.compact) // has to be this cause apparently wheel is decrpicated
                 .foregroundColor(.cyan)
                 .keyboardType(.numberPad)
                 .padding()
@@ -378,7 +484,6 @@ struct PasswordView: View {
         }
     }
 }
-
 struct NameView: View {
     @Binding var name: Onboarding.Name
     
@@ -413,7 +518,72 @@ struct NameView: View {
         .background(Color.cyan.ignoresSafeArea())
     }
 }
+
+struct FirstSurveyView: View {
+    @Binding var firstsurvey: Onboarding.FirstSurvey
     
+    let questions: [String: [String]] = [
+        "What do you hope to accomplish by reducing screen time?": ["Learn a new skill", "Get Outside", "Exercise", "Study", "Socialize", "Just Stay Off the Phone", "Other"],
+        "How much time do you want to put at first into accomplishing the above goal?": ["Just a bit(10-20 minutes)", "Good amount(30-60 minutes)", "Alot(70-90 minutes)", "a Ton of Time(100+ minutes)" ],
+        "How frequently would you like to complete the above goals": ["Once every 3 weeks","Once every 2 weeks","Once a Week","Twice a week","Three times a week", "Four times a week", "Five times a week", "Six times a week", "Every day"]
+    ]
+    
+    let columns = [GridItem(.adaptive(minimum: 120), spacing: 10)]
+    
+    var body: some View {
+        VStack(spacing: 24) {
+            Text("Survey")
+                .font(.title)
+                .bold()
+                .foregroundColor(.white)
+            Text("Please choose ONE answer per question").multilineTextAlignment(.center)
+                .lineLimit(nil)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal).foregroundColor(.white)
+
+            
+            ScrollView {
+                LazyVStack(spacing: 16) {
+                    ForEach(Array(questions.keys), id: \.self) { question in
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(question)
+                                .font(.headline)
+                                .foregroundColor(.white)
+                            
+                            LazyVGrid(columns: columns, spacing: 10) {
+                                ForEach(questions[question]!, id: \.self) { answer in
+                                    Button(action: {
+                                        firstsurvey.firstsurveyanswers[question] = answer
+                                    }) {
+                                        Text(answer)
+                                            .font(.subheadline)
+                                            .multilineTextAlignment(.center)
+                                            .padding(8)
+                                            .frame(maxWidth: .infinity)
+                                            .background(
+                                                firstsurvey.firstsurveyanswers[question] == answer
+                                                ? Color.cyan
+                                                : Color.white.opacity(0.2)
+                                            )
+                                            .foregroundColor(.white)
+                                            .cornerRadius(12)
+                                    }
+                                }
+                            }
+                        }
+                        .padding()
+                        .background(Color.white.opacity(0.1))
+                        .cornerRadius(12)
+                    }
+                }
+                .padding()
+            }
+        }
+        .padding()
+        .background(Color.cyan.ignoresSafeArea())
+    }
+}
+
     
     
     
@@ -422,6 +592,10 @@ struct NameView: View {
         @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding = false
         @State private var onboarding = Onboarding()
         @State private var currentStepIndex = 0
+        @State private var isLoggingIn = false
+        @State private var isLoggedIn = false
+        
+
         
         var steps: [OnboardingStep] {
             OnboardingStep.allCases
@@ -431,31 +605,15 @@ struct NameView: View {
             if hasCompletedOnboarding {
                 // Placeholder for your main app
                 MainAppView()
+            } else if isLoggingIn{
+                LoginView(isLoggingIn: $isLoggingIn, isLoggedIn: $isLoggedIn)
+            }else if isLoggedIn{
+                MainAppView()
             } else {
                 onboardingFlow
             }
         }
-        struct MainAppView: View {
-            @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding = false
-            
-            var body: some View {
-                VStack {
-                    Text("Welcome to the Main App!")
-                        .font(.largeTitle)
-                        .foregroundColor(.cyan)
-                        .padding()
-                    
-                    Button("Reset Onboarding") {
-                        hasCompletedOnboarding = false
-                    }
-                    .font(.headline)
-                    .padding()
-                    .background(Color.white)
-                    .foregroundColor(.cyan)
-                    .cornerRadius(10)
-                }
-            }
-        }
+        
         var onboardingFlow: some View {
             VStack {
                 TabView(selection: $currentStepIndex) {
@@ -501,6 +659,8 @@ struct NameView: View {
                 BirthdayView(birthday: $onboarding.birthday)
             case .username:
                 UsernameView(username: $onboarding.username)
+            case .email:
+                EmailView (email: $onboarding.email)
             case .review:
                 ReviewScreen(onboarding: onboarding)
             case .features:
@@ -514,7 +674,9 @@ struct NameView: View {
             case .password:
                 PasswordView(password: $onboarding.password)
             case .welcome:
-                WelcomeScreen(onboarding: onboarding)
+                WelcomeScreen(onboarding: onboarding, isLoggingIn: $isLoggingIn)
+            case .firstsurvey:
+                FirstSurveyView(firstsurvey: $onboarding.firstsurvey)
             }
         }
     }

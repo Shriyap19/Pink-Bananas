@@ -11,6 +11,7 @@ struct GoalItem: Identifiable {
     }
 }
 
+
 struct GoalsPageView: View {
     @State private var allGoals: [GoalItem] = []
     @State private var selectedApp = "Instagram"

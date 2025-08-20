@@ -2,8 +2,13 @@ import SwiftUI
 
 struct GoalItem: Identifiable {
     let id = UUID()
-    var text: String
+    var appName: String
+    var limit: String
     var completedDays: Set<Int> = []
+    
+    var text: String {
+        "I want to limit \(appName) for \(limit) this week."
+    }
 }
 
 struct GoalsPageView: View {
@@ -69,16 +74,18 @@ struct GoalsPageView: View {
                             .multilineTextAlignment(.center)
                             
                             Button("Save Goal") {
-                                guard allGoals.count < 3 else { return }
-                                let goalSentence = "I want to limit \(selectedApp) for \(selectedLimit) this week."
-                                allGoals.insert(GoalItem(text: goalSentence), at: 0)
+                                let isAppAlreadyUsed = allGoals.contains { $0.appName == selectedApp }
+                                guard !isAppAlreadyUsed, allGoals.count < 3 else { return }
+                                
+                                let newGoal = GoalItem(appName: selectedApp, limit: selectedLimit)
+                                allGoals.insert(newGoal, at: 0)
                             }
                             .padding()
                             .foregroundColor(.white)
-                            .background(allGoals.count < 3 ? .green.opacity(0.7) : .gray)
+                            .background(allGoals.count < 3 && !allGoals.contains(where: { $0.appName == selectedApp }) ? .green.opacity(0.7) : .gray)
                             .cornerRadius(12)
                             .padding(.horizontal)
-                            .disabled(allGoals.count >= 3)
+                            .disabled(allGoals.count >= 3 || allGoals.contains(where: { $0.appName == selectedApp }))
                         }
                         
                         if allGoals.isEmpty {

@@ -9,18 +9,25 @@ public class User {
     private String password;
     private String name;
     private int age;
+    private int streak;
 
-    public User(String username, String password, String name, int age) {
+    public User() {
+        //no argument constructor :)
+    }
+
+    public User(String username, String password, String name, int age, int streak) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.age = age;
+        this.streak = streak;
     }
     
-    public User(String username, String password, String name) {
+    public User(String username, String password, String name, int streak) {
         this.username = username;
         this.password = password;
         this.name = name;
+        this.streak = streak;
     }
 
      public String getUsername() {return username;}
@@ -34,6 +41,9 @@ public class User {
 
      public int getAge() {return age;}
      public void setAge(int age) {this.age = age;}
+
+     public int getStreak() {return streak;}
+     public void setStreak(int streak) {this.streak = streak;}
 
      @Override
      public String toString() {

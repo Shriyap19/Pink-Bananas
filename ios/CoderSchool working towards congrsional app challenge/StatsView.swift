@@ -1,3 +1,10 @@
+//
+//  StatsView.view.swift
+//  CoderSchool working towards congrsional app challenge
+//
+//  Created by Shriya Patel on 7/22/25.
+//
+
 import SwiftUI
 import Charts
 
@@ -123,14 +130,15 @@ struct StatsView: View {
                             .font(.custom("Futura", size:13))
                             .foregroundColor(.black)
                             .shadow(color:.white,radius:1)
+                        Spacer().frame(height: 16)
                     }
                 }
             }
-            .frame(width: 300, height: 300)
+            .frame(width: 240, height: 240)
             .padding(.bottom,0 )
         }
         .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.bottom, -22)
+        //.padding(.bottom, -22)
     }
 }
 

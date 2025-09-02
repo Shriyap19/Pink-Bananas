@@ -632,7 +632,7 @@ struct ContentView: View {
 
     var body: some View {
         if hasCompletedOnboarding {
-            MainAppView()
+            NavigationTabs()
         } else if isLoggingIn {
             LoginView(isLoggingIn: $isLoggingIn, isLoggedIn: $isLoggedIn)
         } else if isLoggedIn {

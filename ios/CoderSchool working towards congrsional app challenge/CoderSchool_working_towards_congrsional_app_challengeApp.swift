@@ -6,12 +6,15 @@
 //
 
 import SwiftUI
+import ManagedSettings
+import DeviceActivity
+import FamilyControls
 
 @main
+
 struct CoderSchool_working_towards_congrsional_app_challengeApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
-        }
+            ContentView()}
     }
 }

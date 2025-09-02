@@ -10,7 +10,7 @@ import SwiftUI
 struct NavigationTabs: View {
     var body: some View {
         TabView {
-            Image(systemName: "star").tabItem { Image(systemName: "house")
+            MainAppView().tabItem { Image(systemName: "house")
                 Text("Home")
         }
             Image(systemName: "star").tabItem { Image(systemName: "star")

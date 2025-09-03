@@ -178,7 +178,7 @@ struct SearchView: View {
 }
         
         
-struct ContentView: View {
+struct SettingsView: View {
     @StateObject private var viewModel = CustomAppsViewModel()
     @StateObject private var screenTimeManager = ScreenTimeManager.shared
     @AppStorage("IsLoggedIn") var isLoggedIn: Bool = true
@@ -409,6 +409,6 @@ struct ContentView: View {
 
     
     #Preview {
-        ContentView()
+        SettingsView()
     }
 

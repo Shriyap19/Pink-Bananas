@@ -10,13 +10,13 @@ import SwiftUI
 struct NavigationTabs: View {
     var body: some View {
         TabView {
-            Image(systemName: "house").tabItem { Image(systemName: "house")
+            Image(systemName: "star").tabItem { Image(systemName: "house")
                 Text("Home")
         }
             Image(systemName: "star").tabItem { Image(systemName: "star")
                 Text("Goals")
         }
-            Image(systemName: "chart.pie").tabItem { Image(systemName: "chart.pie")
+            StatsView().tabItem { Image(systemName: "chart.pie")
                 Text("Statistics")
         }
             Image(systemName: "checkmark.circle.fill").tabItem { Image(systemName: "checkmark.circle.fill")

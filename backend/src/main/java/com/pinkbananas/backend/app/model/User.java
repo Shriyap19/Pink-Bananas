@@ -10,24 +10,27 @@ public class User {
     private String name;
     private int age;
     private int streak;
+    private String goals;
 
     public User() {
         //no argument constructor :)
     }
 
-    public User(String username, String password, String name, int age, int streak) {
+    public User(String username, String password, String name, String goals, int age, int streak) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.age = age;
         this.streak = streak;
+        this.goals = goals;
     }
     
-    public User(String username, String password, String name, int streak) {
+    public User(String username, String password, String name, String goals, int streak) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.streak = streak;
+        this.goals = goals;
     }
 
      public String getUsername() {return username;}
@@ -44,6 +47,9 @@ public class User {
 
      public int getStreak() {return streak;}
      public void setStreak(int streak) {this.streak = streak;}
+
+     public String getGoals() {return goals;}
+     public void setGoals(String goals) {this.goals = goals;}
 
      @Override
      public String toString() {

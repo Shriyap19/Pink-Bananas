@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		112674A82E633F1D008519C2 /* CoderSchool working towards congrsional app challenge.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "CoderSchool working towards congrsional app challenge.entitlements"; sourceTree = "<group>"; };
 		116038752DF102C000F18D93 /* GoalsPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsPageView.swift; sourceTree = "<group>"; };
 		90459F932DE24C2A0045BAB9 /* CoderSchool working towards congrsional app challenge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CoderSchool working towards congrsional app challenge.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		90459F962DE24C2A0045BAB9 /* CoderSchool_working_towards_congrsional_app_challengeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoderSchool_working_towards_congrsional_app_challengeApp.swift; sourceTree = "<group>"; };
@@ -55,6 +56,7 @@
 		90459F952DE24C2A0045BAB9 /* CoderSchool working towards congrsional app challenge */ = {
 			isa = PBXGroup;
 			children = (
+				112674A82E633F1D008519C2 /* CoderSchool working towards congrsional app challenge.entitlements */,
 				90459F962DE24C2A0045BAB9 /* CoderSchool_working_towards_congrsional_app_challengeApp.swift */,
 				90459F982DE24C2A0045BAB9 /* ContentView.swift */,
 				90459F9A2DE24C2B0045BAB9 /* Assets.xcassets */,
@@ -109,7 +111,7 @@
 				};
 			};
 			buildConfigurationList = 90459F8E2DE24C2A0045BAB9 /* Build configuration list for PBXProject "CoderSchool working towards congrsional app challenge" */;
-			compatibilityVersion = "Xcode 14.0";
+			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -186,6 +188,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = P388JWQBMB;
@@ -250,6 +253,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_ENTITLEMENTS = "";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = P388JWQBMB;
@@ -279,6 +283,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CoderSchool working towards congrsional app challenge/Preview Content\"";
@@ -308,6 +313,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CoderSchool working towards congrsional app challenge/Preview Content\"";

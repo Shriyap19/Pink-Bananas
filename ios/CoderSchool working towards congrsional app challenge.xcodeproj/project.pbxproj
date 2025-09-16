@@ -11,10 +11,11 @@
 		903CADC12E679AF9001D63A6 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 903CADBD2E679AF9001D63A6 /* StatsView.swift */; };
 		903CADC22E679AF9001D63A6 /* MainAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 903CADBE2E679AF9001D63A6 /* MainAppView.swift */; };
 		90459F972DE24C2A0045BAB9 /* CoderSchool_working_towards_congrsional_app_challengeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90459F962DE24C2A0045BAB9 /* CoderSchool_working_towards_congrsional_app_challengeApp.swift */; };
-		90459F992DE24C2A0045BAB9 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90459F982DE24C2A0045BAB9 /* ContentView.swift */; };
+		90459F992DE24C2A0045BAB9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90459F982DE24C2A0045BAB9 /* SettingsView.swift */; };
 		90459F9B2DE24C2B0045BAB9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 90459F9A2DE24C2B0045BAB9 /* Assets.xcassets */; };
 		90459F9E2DE24C2B0045BAB9 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 90459F9D2DE24C2B0045BAB9 /* Preview Assets.xcassets */; };
 		905579232DE7C75B00068FAE /* NavigationTabs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905579222DE7C75B00068FAE /* NavigationTabs.swift */; };
+		AAD60A492E5F6BA300940EF7 /* Reccomendations.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD60A482E5F6B9E00940EF7 /* Reccomendations.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,10 +24,12 @@
 		903CADBE2E679AF9001D63A6 /* MainAppView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainAppView.swift; sourceTree = "<group>"; };
 		90459F932DE24C2A0045BAB9 /* CoderSchool working towards congrsional app challenge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CoderSchool working towards congrsional app challenge.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		90459F962DE24C2A0045BAB9 /* CoderSchool_working_towards_congrsional_app_challengeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoderSchool_working_towards_congrsional_app_challengeApp.swift; sourceTree = "<group>"; };
-		90459F982DE24C2A0045BAB9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		90459F982DE24C2A0045BAB9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		90459F9A2DE24C2B0045BAB9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		90459F9D2DE24C2B0045BAB9 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		905579222DE7C75B00068FAE /* NavigationTabs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationTabs.swift; sourceTree = "<group>"; };
+		AAD60A482E5F6B9E00940EF7 /* Reccomendations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reccomendations.swift; sourceTree = "<group>"; };
+		AAD60A4A2E62664800940EF7 /* CoderSchool working towards congrsional app challenge.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "CoderSchool working towards congrsional app challenge.entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,11 +62,15 @@
 		90459F952DE24C2A0045BAB9 /* CoderSchool working towards congrsional app challenge */ = {
 			isa = PBXGroup;
 			children = (
+				AAD60A4A2E62664800940EF7 /* CoderSchool working towards congrsional app challenge.entitlements */,
 				90459F962DE24C2A0045BAB9 /* CoderSchool_working_towards_congrsional_app_challengeApp.swift */,
+
 				90459F982DE24C2A0045BAB9 /* ContentView.swift */,
 				903CADBC2E679AF9001D63A6 /* LoginView.swift */,
 				903CADBE2E679AF9001D63A6 /* MainAppView.swift */,
 				903CADBD2E679AF9001D63A6 /* StatsView.swift */,
+				90459F982DE24C2A0045BAB9 /* SettingsView.swift */,
+				AAD60A482E5F6B9E00940EF7 /* Reccomendations.swift */,
 				90459F9A2DE24C2B0045BAB9 /* Assets.xcassets */,
 				905579222DE7C75B00068FAE /* NavigationTabs.swift */,
 				90459F9C2DE24C2B0045BAB9 /* Preview Content */,
@@ -149,11 +156,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+
 				90459F992DE24C2A0045BAB9 /* ContentView.swift in Sources */,
 				903CADC22E679AF9001D63A6 /* MainAppView.swift in Sources */,
 				903CADC12E679AF9001D63A6 /* StatsView.swift in Sources */,
 				90459F972DE24C2A0045BAB9 /* CoderSchool_working_towards_congrsional_app_challengeApp.swift in Sources */,
 				903CADC02E679AF9001D63A6 /* LoginView.swift in Sources */,
+				90459F992DE24C2A0045BAB9 /* SettingsView.swift in Sources */,
+				AAD60A492E5F6BA300940EF7 /* Reccomendations.swift in Sources */,
 				905579232DE7C75B00068FAE /* NavigationTabs.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -285,6 +295,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "CoderSchool working towards congrsional app challenge/CoderSchool working towards congrsional app challenge.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CoderSchool working towards congrsional app challenge/Preview Content\"";
@@ -314,6 +325,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "CoderSchool working towards congrsional app challenge/CoderSchool working towards congrsional app challenge.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"CoderSchool working towards congrsional app challenge/Preview Content\"";

@@ -9,19 +9,28 @@ import SwiftUI
 import UIKit
 import FamilyControls
 import ManagedSettings
+import Foundation
+import Combine
 
 
 extension UIApplication {
     func dismissKeyboard() {
-        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil) //adds helper function to hide keyboard when needed in app
     }
 } // used to dismiss keyboird after done typgin
 
-final class FamilyControlsManager: ObservableObject {
-    @Published var authorized: Bool = false
-    @Published var selection = FamilyActivitySelection()
+final class FamilyControlsManager: ObservableObject { //observabel object lets swift change view automatilcy when updated
+    @Published var authorized: Bool = false //authoried var checls if app has permisions or not
+    @Published var selection = FamilyActivitySelection() //var that actually stores the selected apps, binding allowes for picker to be updated live
     
-    func requestAuthorization() {
+    private static let savedSelectionKey = "SavedFamilyActivitySelection" //key used to save/selction in userdefaults
+
+    init() {
+        // Load saved selection of apps on launch
+        loadSelection()
+    }
+
+    func requestAuthorization() { //authorization for familycontrols
         Task {
             do {
                 try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
@@ -37,7 +46,27 @@ final class FamilyControlsManager: ObservableObject {
             }
         }
     }
+
+    func saveSelection() { // turnes apps selcted into code so can save and stores it in userdefaults
+        do {
+            let data = try PropertyListEncoder().encode(selection)
+            UserDefaults.standard.set(data, forKey: Self.savedSelectionKey)
+        } catch {
+            print("Failed to save FamilyActivitySelection:", error)
+        }
+    }
+
+    private func loadSelection() { // takes the saved from UserDefaults then decodes it so it can be displayed to user
+        guard let data = UserDefaults.standard.data(forKey: Self.savedSelectionKey) else { return }
+        do {
+            let saved = try PropertyListDecoder().decode(FamilyActivitySelection.self, from: data)
+            selection = saved
+        } catch {
+            print("Failed to load FamilyActivitySelection:", error)
+        }
+    }
 }
+
 
 
 
@@ -238,8 +267,9 @@ struct ReviewScreen: View {
 
 struct RestrictedAppsView: View {
     @Binding var restrictedApps: Onboarding.RestrictedApps
-    var familyManager: FamilyControlsManager? = nil // controls familyPicker
+    @EnvironmentObject var familyManager: FamilyControlsManager // controls familyPicker
     @Binding var showFamilyPicker: Bool // controls is family picer, restoricted apps popus shows or not
+    
 
     var body: some View {
         VStack(alignment: .center, spacing: 30) {
@@ -260,15 +290,13 @@ struct RestrictedAppsView: View {
 
             // Button to open FamilyActivityPicker
             Button(action: {
-                if let fm = familyManager {
-                    if !fm.authorized { fm.requestAuthorization() }  //button checks if user said yes to authorization if not tells them
-                    showFamilyPicker = true
-                } else {
-                    print("FamilyControls manager not provided")
+                if !familyManager.authorized {
+                    familyManager.requestAuthorization()
                 }
+                showFamilyPicker = true
             }) {
                 HStack {
-                    Image(systemName: "square.stack") //actual popup
+                    Image(systemName: "square.stack")
                     Text("Choose from device")
                 }
                 .padding(.vertical, 12)
@@ -281,25 +309,23 @@ struct RestrictedAppsView: View {
             Spacer()
         }
         .padding()
-        .sheet(isPresented: $showFamilyPicker) { // the actual popup
-            if let fm = familyManager {
-                FamilyActivityPicker(selection: Binding(
-                    get: { fm.selection },
-                    set: { fm.selection = $0 } //everytime new app is selected manager is updated
-                ))
-                .presentationDetents([.medium, .large]) //adjust size of popup
-                .onDisappear {
-                    print("FamilyActivityPicker dismissed. selection:", fm.selection) //when popup dissapears
-                   
+        .sheet(isPresented: $showFamilyPicker) { //shows the pop up
+            FamilyActivityPicker(selection: $familyManager.selection) // apple privde the pop up display and the selection thin js tracks the change when u select
+                .presentationDetents([.medium, .large]) //adjust size
+                .onDisappear { // called when thing is closed
+                    // Save selection whenever picker closes
+                    familyManager.saveSelection()
+                    // Update your onboarding restricted apps if needed
+                    restrictedApps.selectedApps = familyManager.selection.applications.map {
+                        AppItem(name: $0.bundleIdentifier ?? "Unknown", iconName: $0.bundleIdentifier ?? "")
+                    }
+                    print("Picker dismissed. Restricted apps:", restrictedApps.selectedApps)
                 }
-            } else {
-                VStack {
-                    Text("Family Controls not initialized")
-                    Button("Dismiss") { showFamilyPicker = false }
-                }
-                .padding()
-            }
         }
+        .onChange(of: familyManager.selection) {  // runs everytime the actuall varible saving the thing everytime the selection var changes
+            familyManager.saveSelection()
+        }
+
         .background(Color.cyan.ignoresSafeArea())
     }
 }
@@ -620,19 +646,19 @@ struct WelcomeScreen: View {
 
 struct ContentView: View {
     @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding = false
+    @EnvironmentObject var familyManager: FamilyControlsManager // swithced to this instead private so it can also be used in statsview and its all the same
     @State private var onboarding = Onboarding()
     @State private var currentStepIndex = 0
     @State private var isLoggingIn = false
     @State private var isLoggedIn = false
     
-    @StateObject private var familyManager = FamilyControlsManager()
     @State private var showFamilyPickerFromRestricted = false
 
     var steps: [OnboardingStep] { OnboardingStep.allCases }
 
     var body: some View {
         if hasCompletedOnboarding {
-            MainAppView()
+            NavigationTabs()
         } else if isLoggingIn {
             LoginView(isLoggingIn: $isLoggingIn, isLoggedIn: $isLoggedIn)
         } else if isLoggedIn {
@@ -686,9 +712,7 @@ struct ContentView: View {
         case .restrictedApps:
             RestrictedAppsView(
                 restrictedApps: $onboarding.restrictedApps,
-                familyManager: familyManager,
-                showFamilyPicker: $showFamilyPickerFromRestricted
-            )
+                showFamilyPicker: $showFamilyPickerFromRestricted).environmentObject(familyManager)
         case .birthday:
             BirthdayView(birthday: $onboarding.birthday)
         case .username:
@@ -716,5 +740,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView().environmentObject(FamilyControlsManager())
 }

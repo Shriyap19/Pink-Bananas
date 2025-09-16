@@ -23,7 +23,7 @@ struct NavigationTabs: View {
                 Text("Recommendation")
         }
             Image(systemName: "gear").tabItem { Image(systemName: "gear")
-                Text("More")
+                Text("Settings")
         }
 
 

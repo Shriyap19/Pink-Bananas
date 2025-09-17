@@ -16,7 +16,7 @@ struct GoalItem: Identifiable {
     var status: GoalStatus = .notChecked
     
     var text: String {
-        "I want to limit \(appName) for \(limit) this week."
+        "I want to limit \(appName) for \(limit) a day."
     }
 }
 
@@ -112,7 +112,7 @@ struct GoalsPageView: View {
                                 .background(Color(.systemGray6))
                                 .cornerRadius(8)
                                 
-                                Text("this week")
+                                Text("a day")
                                     .font(.custom("Futura", size: 18))
                                     .foregroundStyle(.white)
                             }

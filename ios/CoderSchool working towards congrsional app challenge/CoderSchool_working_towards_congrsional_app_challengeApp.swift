@@ -15,6 +15,6 @@ import FamilyControls
 struct CoderSchool_working_towards_congrsional_app_challengeApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()}
+            SettingsView()}
     }
 }

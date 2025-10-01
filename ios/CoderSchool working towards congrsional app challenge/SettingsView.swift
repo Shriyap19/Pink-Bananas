@@ -11,9 +11,11 @@ func requestNotificationPermission() {
             print("Notification permission granted")
         } else {
             print("Notification permission denied")
+
         }
     }
 }
+
 
 struct CustomApp: Identifiable, Codable, Hashable {
     let id: String

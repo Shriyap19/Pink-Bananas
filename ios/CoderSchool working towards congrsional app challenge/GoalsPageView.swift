@@ -46,7 +46,7 @@ struct GoalsPageView: View {
     
     func submitSendGoalItem() {
         let feedbackData = Feedback(appName: selectedApp, limit: selectedLimit)
-        //    postFeedback(feedback: feedbackData)
+            postFeedback(feedback: feedbackData)
     }
     
     var body: some View {
@@ -245,7 +245,17 @@ extension GoalsPageView {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        // TODO: Encode feedback and send with URLSession
+        // Save Goal data even when the app restarts
+        // a. appstorage
+        // b. core data stack
+        // c. maybe send it straight to the database
+        
+        // OPTIONAL TODO: Encode feedback and send with URLSession
+        //1. Encode Goal Data
+        //2. attached encoded data to request
+        //3. send request
+        
+        
     }
 }
 

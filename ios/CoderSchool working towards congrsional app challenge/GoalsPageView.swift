@@ -1,18 +1,26 @@
 import SwiftUI
 
-enum GoalStatus {
+enum GoalStatus: String, Codable {
     case notChecked
     case achieved
     case failed
 }
 
-struct GoalItem: Identifiable {
-    let id = UUID()
+struct GoalItem: Identifiable, Codable {
+    let id: UUID
     var appName: String
     var limit: String
     var completedDays: Set<Int> = []
     var status: GoalStatus = .notChecked
     
+    init(id: UUID = UUID(), appName: String, limit: String, completedDays: Set<Int> = [], status: GoalStatus = .notChecked) {
+        self.id = id
+        self.appName = appName
+        self.limit = limit
+        self.completedDays = completedDays
+        self.status = status
+    }
+
     var text: String {
         "I want to limit \(appName) for \(limit) a day."
     }
@@ -23,19 +31,32 @@ struct Feedback: Codable {
     var limit: String
 }
 
-
 struct GoalsPageView: View {
+
+    @AppStorage("allGoalsData") private var allGoalsData: Data = Data()
+
     @State private var allGoals: [GoalItem] = []
     @State private var selectedApp = "Instagram"
     @State private var selectedLimit = "30 mins"
-    
     
     let apps = ["Instagram", "TikTok", "YouTube", "Snapchat", "Twitter"]
     let limits = ["15 mins", "30 mins", "1 hr", "2 hrs"]
     let daysToShow = 7
     
+
+    func loadGoals() {
+        if let decoded = try? JSONDecoder().decode([GoalItem].self, from: allGoalsData) {
+            allGoals = decoded
+        }
+    }
     
-    
+
+    func saveGoals() {
+        if let encoded = try? JSONEncoder().encode(allGoals) {
+            allGoalsData = encoded
+        }
+    }
+
     func parseLimit(_ limit: String) -> TimeInterval {
         if limit.contains("15") { return 15.0 * 60.0 }
         if limit.contains("30") { return 30.0 * 60.0 }
@@ -46,7 +67,7 @@ struct GoalsPageView: View {
     
     func submitSendGoalItem() {
         let feedbackData = Feedback(appName: selectedApp, limit: selectedLimit)
-            postFeedback(feedback: feedbackData)
+        postFeedback(feedback: feedbackData)
     }
     
     var body: some View {
@@ -109,6 +130,7 @@ struct GoalsPageView: View {
                                 
                                 let newGoal = GoalItem(appName: selectedApp, limit: selectedLimit)
                                 allGoals.insert(newGoal, at: 0)
+                                saveGoals() // ✅ Save after adding
                                 submitSendGoalItem()
                             }
                             .padding()
@@ -117,7 +139,6 @@ struct GoalsPageView: View {
                             .cornerRadius(12)
                             .padding(.horizontal)
                             .disabled(allGoals.count >= 3 || allGoals.contains(where: { $0.appName == selectedApp }))
-                            
                             
                             if allGoals.isEmpty {
                                 Text("No goals yet.")
@@ -129,6 +150,7 @@ struct GoalsPageView: View {
                                     GoalRowView(goal: $goal, daysToShow: daysToShow) {
                                         if let index = allGoals.firstIndex(where: { $0.id == goal.id }) {
                                             allGoals.remove(at: index)
+                                            saveGoals() // ✅ Save after delete
                                         }
                                     }
                                 }
@@ -143,6 +165,7 @@ struct GoalsPageView: View {
                                     if !allGoals.isEmpty {
                                         Button("Delete All Goals") {
                                             allGoals.removeAll()
+                                            saveGoals() // ✅ Save after clearing
                                         }
                                         .font(.system(size: 14))
                                         .padding(8)
@@ -175,6 +198,9 @@ struct GoalsPageView: View {
                 }
             }
         }
+        .onAppear {
+            loadGoals()
+        }
     }
     
     struct GoalRowView: View {
@@ -199,6 +225,7 @@ struct GoalsPageView: View {
                     Button("Reset") {
                         goal.completedDays.removeAll()
                         goal.status = .notChecked
+                        saveGoals()
                     }
                     .font(.system(size: 12))
                     .padding(6)
@@ -208,6 +235,7 @@ struct GoalsPageView: View {
                     
                     Button("X") {
                         removeAction()
+                        saveGoals()
                     }
                     .font(.system(size: 14, weight: .bold))
                     .frame(width: 28, height: 28)
@@ -227,6 +255,7 @@ struct GoalsPageView: View {
                                 } else {
                                     goal.completedDays.insert(i)
                                 }
+                                saveGoals() /
                             }
                     }
                 }
@@ -238,6 +267,7 @@ struct GoalsPageView: View {
         }
     }
 }
+
 extension GoalsPageView {
     func postFeedback(feedback: Feedback) {
         guard let url = URL(string: "mongodb+srv://montgomerycoderschool:theCatOnTheCOMPUTERRR@cluster0.b9stmdy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&ssl=true") else { return }
@@ -245,17 +275,7 @@ extension GoalsPageView {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        // Save Goal data even when the app restarts
-        // a. appstorage
-        // b. core data stack
-        // c. maybe send it straight to the database
-        
-        // OPTIONAL TODO: Encode feedback and send with URLSession
-        //1. Encode Goal Data
-        //2. attached encoded data to request
-        //3. send request
-        
-        
+      
     }
 }
 

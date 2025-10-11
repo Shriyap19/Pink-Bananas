@@ -13,7 +13,7 @@ struct NavigationTabs: View {
             MainAppView().tabItem { Image(systemName: "house")
                 Text("Home")
         }
-            Image(systemName: "star").tabItem { Image(systemName: "star")
+            GoalsPageView().tabItem { Image(systemName: "star")
                 Text("Goals")
         }
             StatsView().tabItem { Image(systemName: "chart.pie")

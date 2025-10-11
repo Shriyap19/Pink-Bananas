@@ -42,14 +42,12 @@ struct GoalsPageView: View {
     let apps = ["Instagram", "TikTok", "YouTube", "Snapchat", "Twitter"]
     let limits = ["15 mins", "30 mins", "1 hr", "2 hrs"]
     let daysToShow = 7
-    
 
     func loadGoals() {
         if let decoded = try? JSONDecoder().decode([GoalItem].self, from: allGoalsData) {
             allGoals = decoded
         }
     }
-    
 
     func saveGoals() {
         if let encoded = try? JSONEncoder().encode(allGoals) {
@@ -65,10 +63,10 @@ struct GoalsPageView: View {
         return 0
     }
     
-    func submitSendGoalItem() {
-        let feedbackData = Feedback(appName: selectedApp, limit: selectedLimit)
-        postFeedback(feedback: feedbackData)
-    }
+  // func submitSendGoalItem() {
+    //    let feedbackData = Feedback(appName: selectedApp, limit: selectedLimit)
+        //postFeedback(feedback: feedbackData)
+  //  }
     
     var body: some View {
         ZStack {
@@ -130,8 +128,8 @@ struct GoalsPageView: View {
                                 
                                 let newGoal = GoalItem(appName: selectedApp, limit: selectedLimit)
                                 allGoals.insert(newGoal, at: 0)
-                                saveGoals() // ✅ Save after adding
-                                submitSendGoalItem()
+                                saveGoals()
+                            //    submitSendGoalItem()
                             }
                             .padding()
                             .foregroundColor(.white)
@@ -147,10 +145,10 @@ struct GoalsPageView: View {
                                     .padding(.horizontal)
                             } else {
                                 ForEach($allGoals) { $goal in
-                                    GoalRowView(goal: $goal, daysToShow: daysToShow) {
+                                    GoalRowView(goal: $goal, daysToShow: daysToShow, removeAction: saveGoals) {
                                         if let index = allGoals.firstIndex(where: { $0.id == goal.id }) {
                                             allGoals.remove(at: index)
-                                            saveGoals() // ✅ Save after delete
+                                            saveGoals()
                                         }
                                     }
                                 }
@@ -165,7 +163,7 @@ struct GoalsPageView: View {
                                     if !allGoals.isEmpty {
                                         Button("Delete All Goals") {
                                             allGoals.removeAll()
-                                            saveGoals() // ✅ Save after clearing
+                                            saveGoals()
                                         }
                                         .font(.system(size: 14))
                                         .padding(8)
@@ -207,6 +205,7 @@ struct GoalsPageView: View {
         @Binding var goal: GoalItem
         let daysToShow: Int
         var removeAction: () -> Void
+        var saveAction: () -> Void
         
         var body: some View {
             VStack(alignment: .leading, spacing: 10) {
@@ -225,7 +224,7 @@ struct GoalsPageView: View {
                     Button("Reset") {
                         goal.completedDays.removeAll()
                         goal.status = .notChecked
-                        saveGoals()
+                        saveAction()
                     }
                     .font(.system(size: 12))
                     .padding(6)
@@ -235,7 +234,7 @@ struct GoalsPageView: View {
                     
                     Button("X") {
                         removeAction()
-                        saveGoals()
+                        saveAction()
                     }
                     .font(.system(size: 14, weight: .bold))
                     .frame(width: 28, height: 28)
@@ -255,7 +254,7 @@ struct GoalsPageView: View {
                                 } else {
                                     goal.completedDays.insert(i)
                                 }
-                                saveGoals() /
+                                saveAction()
                             }
                     }
                 }
@@ -274,8 +273,6 @@ extension GoalsPageView {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-      
     }
 }
 

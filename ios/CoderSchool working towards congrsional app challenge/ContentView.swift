@@ -683,7 +683,7 @@ struct ContentView: View {
                 if currentStepIndex < steps.count - 1 {
                     withAnimation { currentStepIndex += 1 }
                 } else {
-                    var new_user = User(selectedApps: onboarding.restrictedApps, username: onboarding.username, name: onboarding.name, password: onboarding.password, email: onboarding.email, firstsurveyanswers: onboarding.firstsurvey)
+                    let new_user = User(selectedApps: onboarding.restrictedApps, username: onboarding.username, name: onboarding.name, password: onboarding.password, email: onboarding.email, firstsurveyanswers: onboarding.firstsurvey)
                     register_user(user: new_user)
                     hasCompletedOnboarding = true
                 }

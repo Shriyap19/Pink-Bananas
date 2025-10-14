@@ -9,7 +9,7 @@
 import Foundation
 
 extension LoginView {
-    func logIn(user:User) {
+    func logIn(user:LoggingInUser)  {
         
         guard let url = URL(string: "http://127.0.0.1:8000") else //varible for the url link
         {return}

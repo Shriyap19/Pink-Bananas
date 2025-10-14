@@ -58,10 +58,14 @@ struct LoginView: View {
             Spacer()
             
             Button("Sign In") {
+                let logginginuser = LoggingInUser(password: password, username: username)
+                logIn(user: logginginuser)
+                
                 if username == "User" && password == "Pass" {
                     loginError = ""
                     hasCompletedOnboarding = true
                     isLoggedIn = true
+                    
                 } else {
                     loginError = "Username or password is incorrect."
                 }

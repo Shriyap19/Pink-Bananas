@@ -14,3 +14,9 @@ struct User: Codable {
     let email: String
     let firstsurveyanswers: [String: String]
 }
+
+struct LoggingInUser: Codable {
+    let password: String
+    let username: String
+    
+}

@@ -13,16 +13,16 @@ struct NavigationTabs: View {
             MainAppView().tabItem { Image(systemName: "house")
                 Text("Home")
         }
-            Image(systemName: "star").tabItem { Image(systemName: "star")
+            GoalsPageView().tabItem { Image(systemName: "star")
                 Text("Goals")
         }
             StatsView().tabItem { Image(systemName: "chart.pie")
                 Text("Statistics")
         }
-            Image(systemName: "checkmark.circle.fill").tabItem { Image(systemName: "checkmark.circle.fill")
+            ReccomendationsView().tabItem { Image(systemName: "checkmark.circle.fill")
                 Text("Recommendation")
         }
-            Image(systemName: "gear").tabItem { Image(systemName: "gear")
+            SettingsView().tabItem { Image(systemName: "gear")
                 Text("Settings")
         }
 

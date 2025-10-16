@@ -140,13 +140,18 @@ class AppReminderManager {
 class ScreenTimeManager: ObservableObject {
     static let shared = ScreenTimeManager()
     private let center = AuthorizationCenter.shared
+    
+    @Published var selection = FamilyActivitySelection() //var that actually stores the selected apps, binding allowes for picker to be updated live
 
     @Published var isAuthorized = false
+    
+    private static let savedSelectionKey = "SavedFamilyActivitySelection" //key used to save/selction in userdefaults
 
     init() {
         Task {
             await updateAuthorizationStatus()
         }
+        loadSelection()
     }
 
     func requestAuthorization() async {
@@ -163,6 +168,25 @@ class ScreenTimeManager: ObservableObject {
         let status = center.authorizationStatus
         isAuthorized = (status == .approved)
         print("Screen Time authorization status: \(status.rawValue)")
+    }
+    
+    func saveSelection() { // turnes apps selcted into code so can save and stores it in userdefaults
+        do {
+            let data = try PropertyListEncoder().encode(selection)
+            UserDefaults.standard.set(data, forKey: Self.savedSelectionKey)
+        } catch {
+            print("Failed to save FamilyActivitySelection:", error)
+        }
+    }
+
+    private func loadSelection() { // takes the saved from UserDefaults then decodes it so it can be displayed to user
+        guard let data = UserDefaults.standard.data(forKey: Self.savedSelectionKey) else { return }
+        do {
+            let saved = try PropertyListDecoder().decode(FamilyActivitySelection.self, from: data)
+            selection = saved
+        } catch {
+            print("Failed to load FamilyActivitySelection:", error)
+        }
     }
 }
 

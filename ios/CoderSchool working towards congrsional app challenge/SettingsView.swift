@@ -20,6 +20,7 @@ func requestNotificationPermission() {
 struct CustomApp: Identifiable, Codable, Hashable {
     let id: String
     let name: String
+    let appIcon: String
     var isRestricted: Bool = false
 }
 
@@ -139,6 +140,7 @@ class AppReminderManager {
 @MainActor
 class ScreenTimeManager: ObservableObject {
     static let shared = ScreenTimeManager()
+    let DAMcenter = DeviceActivityCenter()
     private let center = AuthorizationCenter.shared
     
     @Published var selection = FamilyActivitySelection() //var that actually stores the selected apps, binding allowes for picker to be updated live
@@ -188,12 +190,17 @@ class ScreenTimeManager: ObservableObject {
             print("Failed to load FamilyActivitySelection:", error)
         }
     }
+    
+    func startMonitoring(){
+        print("")
+    }
 }
 
 // MARK: - iTunes response models
 struct ItunesApp: Decodable {
     let trackId: Int
     let trackName: String
+    let artworkUrl100: String
 }
 
 struct ItunesSearchResponse: Decodable {
@@ -240,7 +247,7 @@ class CustomAppsViewModel: ObservableObject {
                 let decoded = try JSONDecoder().decode(ItunesSearchResponse.self, from: data)
                 DispatchQueue.main.async {
                     let newApps = decoded.results.map {
-                        CustomApp(id: String($0.trackId), name: $0.trackName)
+                        CustomApp(id: String($0.trackId), name: $0.trackName, appIcon: $0.artworkUrl100)
                     }
                     self?.searchResults = newApps.filter { app in
                         !(self?.selectedApps.contains(app) ?? false)
@@ -342,7 +349,7 @@ struct SettingsView: View {
                     .font(.custom("futura", size: 40))
                     .foregroundColor(.white)
                     .padding(.top, 20)
-
+                
                 List {
                     Section(header: Text("User Info").font(.custom("futura", size: 25))
                         .foregroundColor(.white)) {
@@ -353,7 +360,7 @@ struct SettingsView: View {
                                     Text("Details").foregroundColor(.gray)
                                 }
                             }
-
+                            
                             NavigationLink(destination: Text("Link to Nikita's page")) {
                                 HStack {
                                     Text("Change goals")
@@ -361,13 +368,13 @@ struct SettingsView: View {
                                     Text("Details").foregroundColor(.gray)
                                 }
                             }
-
+                            
                             if screenTimeManager.isAuthorized {
                                 HStack {
                                     Text("Screen Time Access")
                                         .foregroundColor(.black)
                                         .font(.custom("futura", size: 15))
-
+                                    
                                     Spacer()
                                     Text("Granted")
                                         .foregroundColor(.green)
@@ -382,11 +389,11 @@ struct SettingsView: View {
                                 .buttonStyle(.borderedProminent)
                             }
                         }
-
+                    
                     Section(header: Text("Limited-use Apps").font(.custom("futura", size: 25))
                         .foregroundColor(.white)) {
                             ForEach(viewModel.selectedApps) { app in
-                                Toggle(app.name, isOn: Binding(
+                                Toggle(isOn: Binding(
                                     get: {
                                         // Find the app in the array and return its current restricted status
                                         viewModel.selectedApps.first { $0.id == app.id }?.isRestricted ?? false
@@ -395,10 +402,21 @@ struct SettingsView: View {
                                         // set via viewModel helper
                                         viewModel.toggleRestriction(for: app)
                                     }
-                                ))
+                                )){
+                                    HStack{
+                                        AsyncImage(url: URL(string:app.appIcon)){image in
+                                            image.resizable()
+                                        } placeholder:{
+                                            ProgressView() //display progressview while loading the icons
+                                        }
+                                            .frame(width:50,height:50)
+                                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                                        Text(app.name)
+                                    }
+                                }
                             }
                             .onDelete(perform: viewModel.deleteApp)
-
+                            
                             NavigationLink(destination: SearchView().environmentObject(viewModel)) {
                                 HStack {
                                     Text("Add custom app")
@@ -408,7 +426,7 @@ struct SettingsView: View {
                             }
                         }
                         .environmentObject(viewModel)
-
+                    
                     Section {
                         Button(action: handleLogout) {
                             Text("Logout")

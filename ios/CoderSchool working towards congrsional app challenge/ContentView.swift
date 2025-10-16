@@ -19,55 +19,6 @@ extension UIApplication {
     }
 } // used to dismiss keyboird after done typgin
 
-final class FamilyControlsManager: ObservableObject { //observabel object lets swift change view automatilcy when updated
-    @Published var authorized: Bool = false //authoried var checls if app has permisions or not
-    @Published var selection = FamilyActivitySelection() //var that actually stores the selected apps, binding allowes for picker to be updated live
-    
-    private static let savedSelectionKey = "SavedFamilyActivitySelection" //key used to save/selction in userdefaults
-
-    init() {
-        // Load saved selection of apps on launch
-        loadSelection()
-    }
-
-    func requestAuthorization() { //authorization for familycontrols
-        Task {
-            do {
-                try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
-                await MainActor.run {
-                    self.authorized = true
-                    print("Family Controls authorized")
-                }
-            } catch {
-                await MainActor.run {
-                    self.authorized = false
-                    print("Family Controls authorization failed:", error.localizedDescription)
-                }
-            }
-        }
-    }
-
-    func saveSelection() { // turnes apps selcted into code so can save and stores it in userdefaults
-        do {
-            let data = try PropertyListEncoder().encode(selection)
-            UserDefaults.standard.set(data, forKey: Self.savedSelectionKey)
-        } catch {
-            print("Failed to save FamilyActivitySelection:", error)
-        }
-    }
-
-    private func loadSelection() { // takes the saved from UserDefaults then decodes it so it can be displayed to user
-        guard let data = UserDefaults.standard.data(forKey: Self.savedSelectionKey) else { return }
-        do {
-            let saved = try PropertyListDecoder().decode(FamilyActivitySelection.self, from: data)
-            selection = saved
-        } catch {
-            print("Failed to load FamilyActivitySelection:", error)
-        }
-    }
-}
-
-
 
 
 enum OnboardingStep: Int, CaseIterable, Identifiable {
@@ -267,7 +218,7 @@ struct ReviewScreen: View {
 
 struct RestrictedAppsView: View {
     @Binding var restrictedApps: Onboarding.RestrictedApps
-    @EnvironmentObject var familyManager: FamilyControlsManager // controls familyPicker
+    @StateObject var familyManager:ScreenTimeManager = ScreenTimeManager.shared  // controls familyPicker
     @Binding var showFamilyPicker: Bool // controls is family picer, restoricted apps popus shows or not
     
 
@@ -290,8 +241,11 @@ struct RestrictedAppsView: View {
 
             // Button to open FamilyActivityPicker
             Button(action: {
-                if !familyManager.authorized {
-                    familyManager.requestAuthorization()
+                if !familyManager.isAuthorized {
+                    Task{
+                        await familyManager.requestAuthorization()
+                    }
+                    
                 }
                 showFamilyPicker = true
             }) {
@@ -646,7 +600,6 @@ struct WelcomeScreen: View {
 
 struct ContentView: View {
     @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding = false
-    @EnvironmentObject var familyManager: FamilyControlsManager // swithced to this instead private so it can also be used in statsview and its all the same
     @State private var onboarding = Onboarding()
     @State private var currentStepIndex = 0
     @State private var isLoggingIn = false
@@ -712,7 +665,7 @@ struct ContentView: View {
         case .restrictedApps:
             RestrictedAppsView(
                 restrictedApps: $onboarding.restrictedApps,
-                showFamilyPicker: $showFamilyPickerFromRestricted).environmentObject(familyManager)
+                showFamilyPicker: $showFamilyPickerFromRestricted)
         case .birthday:
             BirthdayView(birthday: $onboarding.birthday)
         case .username:
@@ -740,5 +693,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView().environmentObject(FamilyControlsManager())
+    ContentView()
 }

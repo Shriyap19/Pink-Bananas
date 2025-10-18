@@ -330,7 +330,7 @@ struct SettingsView: View {
                                 }
                             }
 
-                            NavigationLink(destination: Text("Link to Nikita's page")) {
+                            NavigationLink(destination: GoalsPageView()) {
                                 HStack {
                                     Text("Change goals")
                                     Spacer()

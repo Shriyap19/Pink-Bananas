@@ -5,16 +5,7 @@ import DeviceActivity
 import FamilyControls
 import UserNotifications
 
-func requestNotificationPermission() {
-    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-        if granted {
-            print("Notification permission granted")
-        } else {
-            print("Notification permission denied")
 
-        }
-    }
-}
 
 
 struct CustomApp: Identifiable, Codable, Hashable {
@@ -140,18 +131,28 @@ class AppReminderManager {
 @MainActor
 class ScreenTimeManager: ObservableObject {
     static let shared = ScreenTimeManager()
-    let DAMcenter = DeviceActivityCenter()
     private let center = AuthorizationCenter.shared
+    private let notifCenter = UNUserNotificationCenter.current()
     
     @Published var selection = FamilyActivitySelection() //var that actually stores the selected apps, binding allowes for picker to be updated live
 
     @Published var isAuthorized = false
+    @Published var isNotificationAuthorized = false
     
     private static let savedSelectionKey = "SavedFamilyActivitySelection" //key used to save/selction in userdefaults
-
+    
+    let DAMcenter = DeviceActivityCenter()
+    let schedule = DeviceActivitySchedule(intervalStart: DateComponents(hour:0, minute:0),
+                                          intervalEnd: DateComponents(hour:23, minute:59),
+                                          repeats: true,
+                                          warningTime:DateComponents(minute:1))
+    let activityName = DeviceActivityName("Pinterest Watcher")
+    
+    
     init() {
         Task {
             await updateAuthorizationStatus()
+            
         }
         loadSelection()
     }
@@ -165,12 +166,38 @@ class ScreenTimeManager: ObservableObject {
             print("Authorization error: \(error.localizedDescription)")
         }
     }
-
     func updateAuthorizationStatus() async {
         let status = center.authorizationStatus
         isAuthorized = (status == .approved)
         print("Screen Time authorization status: \(status.rawValue)")
+        
+        await notifCenter.getNotificationSettings{settings in
+            Task{ @MainActor in
+                switch settings.authorizationStatus{
+                case .authorized:
+                    print("Notification authorized")
+                    self.isNotificationAuthorized = true
+                case .denied:
+                    print("Notifications denied")
+                    self.isNotificationAuthorized = false
+                case .notDetermined:
+                    print("Notifcations not determined")
+                    self.requestNotificationPermission()
+                case .provisional:
+                    // Provisional authorization granted (can send notifications silently).
+                    print("Notification authorization: Provisional")
+                case .ephemeral:
+                    // Ephemeral authorization granted (for app clips).
+                    print("Notification authorization: Ephemeral")
+                @unknown default:
+                    self.isNotificationAuthorized = false
+                }
+            }
+            
+        }
+        
     }
+    
     
     func saveSelection() { // turnes apps selcted into code so can save and stores it in userdefaults
         do {
@@ -192,8 +219,57 @@ class ScreenTimeManager: ObservableObject {
     }
     
     func startMonitoring(){
-        print("")
+        let pinterestEvent = DeviceActivityEvent(applications:selection.applicationTokens, threshold:DateComponents(minute:2))
+        let pinterestEventName = DeviceActivityEvent.Name("Pinterest")
+        do{
+            print("Attempting to start monitoring")
+            try DAMcenter.startMonitoring(activityName, during: schedule, events: [pinterestEventName: pinterestEvent])
+            
+        }catch{
+            print("Error starting monitoring: \(error)")
+        }
     }
+    
+    func stopMonitoring(){
+        print("Stopping the monitoring")
+       DAMcenter.stopMonitoring([activityName])
+    }
+    
+    func requestNotificationPermission() {
+        notifCenter.getNotificationSettings { settings in
+            print("Authorization status: \(settings.authorizationStatus.rawValue)")
+        }
+
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            if granted {
+                self.isNotificationAuthorized = true
+                print("Notification permission granted")
+            } else {
+                print("Notification permission denied")
+
+            }
+        }
+    }
+    
+    func scheduleNotification () async {
+        let content = UNMutableNotificationContent()
+        content.title = "Screen Time Notification"
+        content.body = "Screen time notification"
+        content.sound = UNNotificationSound.default
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+
+        
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger:trigger )
+        
+        do {
+            print("Trying to send notification")
+            try await notifCenter.add(request)
+        }catch{
+            print("Error creating notification \(error)")
+        }
+    }
+    
 }
 
 // MARK: - iTunes response models
@@ -325,10 +401,30 @@ struct SearchView: View {
                         }
                     }
                 }
+            }.padding()
+            Spacer()
+            NavigationLink(value:NavigationDestinations.ValidateRestrictedAppView){
+                ZStack{
+                    Text("Continue")
+                        .padding()
+                        .font(.headline)
+                        .foregroundStyle(.cyan)
+                        .background(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
             }
+            Spacer()
         }
+        .frame(maxWidth:.infinity,maxHeight:.infinity)
         .navigationTitle("Add Custom App")
+        .background(.cyan)
     }
+}
+
+enum NavigationDestinations: String, CaseIterable, Hashable{
+    case SearchView
+    case RestrictedAppsView
+    case ValidateRestrictedAppView
 }
 
 struct SettingsView: View {
@@ -336,6 +432,8 @@ struct SettingsView: View {
     @StateObject private var screenTimeManager = ScreenTimeManager.shared
     @AppStorage("IsLoggedIn") var isLoggedIn: Bool = true
     @State private var isPressed = false
+    @State private var path = NavigationPath()
+    let routes = NavigationDestinations.allCases
 
     private func handleLogout() {
         isLoggedIn = false
@@ -343,7 +441,7 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack(path:$path) {
             VStack {
                 Text("Settings")
                     .font(.custom("futura", size: 40))
@@ -388,6 +486,26 @@ struct SettingsView: View {
                                 }
                                 .buttonStyle(.borderedProminent)
                             }
+                            if screenTimeManager.isNotificationAuthorized {
+                                HStack {
+                                    Text("Notification Access")
+                                        .foregroundColor(.black)
+                                        .font(.custom("futura", size: 15))
+                                    
+                                    Spacer()
+                                    Text("Granted")
+                                        .foregroundColor(.green)
+                                        .font(.custom("futura", size: 15 ))
+                                }
+                            } else {
+                                Button("Enable Notifcation Access") {
+                                    Task {
+                                        screenTimeManager.requestNotificationPermission()
+                                    }
+                                }
+                                .buttonStyle(.borderedProminent)
+                            }
+                            
                         }
                     
                     Section(header: Text("Limited-use Apps").font(.custom("futura", size: 25))
@@ -417,9 +535,9 @@ struct SettingsView: View {
                             }
                             .onDelete(perform: viewModel.deleteApp)
                             
-                            NavigationLink(destination: SearchView().environmentObject(viewModel)) {
+                            NavigationLink(value:NavigationDestinations.RestrictedAppsView) {
                                 HStack {
-                                    Text("Add custom app")
+                                    Text("Add new app")
                                     Spacer()
                                     Text("Details").foregroundColor(.gray)
                                 }
@@ -446,10 +564,77 @@ struct SettingsView: View {
                         )
                     }
                     .listRowBackground(Color(.cyan))
+                    Section {
+                        Button(action: {
+                            Task{
+                                ScreenTimeManager.shared.startMonitoring()
+                            }}) {
+                            Text("Start monitoring")
+                                .font(.custom("futura", size: 25))
+                                .foregroundColor(.white)
+                                .padding(.vertical, 10)
+                                .padding(.horizontal, 20)
+                                .background(Color.green)
+                                .cornerRadius(10)
+                        }
+                        .buttonStyle(.plain)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .simultaneousGesture(
+                            DragGesture(minimumDistance:0)
+                                .onChanged { _ in isPressed = true }
+                                .onEnded { _ in isPressed = false }
+                        )
+                    }
+                    .listRowBackground(Color(.cyan))
+                    Section {
+                        Button(action: {
+                            Task{
+                                ScreenTimeManager.shared.stopMonitoring()
+                            }}) {
+                            Text("Stop monitoring")
+                                .font(.custom("futura", size: 25))
+                                .foregroundColor(.white)
+                                .padding(.vertical, 10)
+                                .padding(.horizontal, 20)
+                                .background(Color.orange)
+                                .cornerRadius(10)
+                        }
+                        .buttonStyle(.plain)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .simultaneousGesture(
+                            DragGesture(minimumDistance:0)
+                                .onChanged { _ in isPressed = true }
+                                .onEnded { _ in isPressed = false }
+                        )
+                        Button(action:{Task{
+                            let userD =  UserDefaults(suiteName: "group.com.tcsm.orangeteamproject")?.string(forKey: "shouldShowAlert")
+                            print("\(userD)")
+                        }}){
+                            Text("Get User Defaults")
+                        }
+                        Button(action:{Task{
+                            await ScreenTimeManager.shared.scheduleNotification()
+                        }}){
+                            Text("Get User Defaults")
+                        }
+                    }
+                    .listRowBackground(Color(.cyan))
+                    
                 }
             }
             .scrollContentBackground(.hidden)
             .background(Color.cyan)
+            .navigationDestination(for: NavigationDestinations.self){route in
+                switch route{
+                case .SearchView:
+                    SearchView().environmentObject(viewModel)
+                case .RestrictedAppsView:
+                    RestrictedAppsView()
+                case .ValidateRestrictedAppView:
+                    ValidateRestrictedAppView()
+                }
+                
+            }
         }
     }
 }

@@ -132,7 +132,6 @@ class ScreenTimeManager: ObservableObject {
     
     private static let savedSelectionKey = "SavedFamilyActivitySelection" //key used to save/selction in userdefaults
     
-    let DAMcenter = DeviceActivityCenter()
     let schedule = DeviceActivitySchedule(intervalStart: DateComponents(hour:0, minute:0),
                                           intervalEnd: DateComponents(hour:23, minute:59),
                                           repeats: true,

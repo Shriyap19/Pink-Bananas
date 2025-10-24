@@ -36,10 +36,11 @@ struct GoalsPageView: View {
     @AppStorage("allGoalsData") private var allGoalsData: Data = Data()
 
     @State private var allGoals: [GoalItem] = []
-    @State private var selectedApp = "Instagram"
+    
+    @ObservedObject var manager = ScreenTimeManager.shared
+    @State private var selectedApp: RestrictedApp? = nil
     @State private var selectedLimit = "30 mins"
     
-    let apps = ["Instagram", "TikTok", "YouTube", "Snapchat", "Twitter"]
     let limits = ["15 mins", "30 mins", "1 hr", "2 hrs"]
     let daysToShow = 7
 
@@ -89,9 +90,11 @@ struct GoalsPageView: View {
                                 Text("I want to limit ")
                                     .font(.custom("Futura", size: 18))
                                     .foregroundStyle(.white)
-                                
+                               
                                 Picker("", selection: $selectedApp) {
-                                    ForEach(apps, id: \.self) { Text($0) }
+                                    ForEach(manager.restrictedApps, id: \.self) {app in
+                                        Text(app.name).tag(app as RestrictedApp?)
+                                    }
                                 }
                                 .pickerStyle(MenuPickerStyle())
                                 .frame(width: 120)
@@ -123,20 +126,20 @@ struct GoalsPageView: View {
                             .multilineTextAlignment(.center)
                             
                             Button("Save Goal") {
-                                let isAppAlreadyUsed = allGoals.contains { $0.appName == selectedApp }
+                                let isAppAlreadyUsed = allGoals.contains { $0.appName == selectedApp?.name }
                                 guard !isAppAlreadyUsed, allGoals.count < 3 else { return }
                                 
-                                let newGoal = GoalItem(appName: selectedApp, limit: selectedLimit)
+                                let newGoal = GoalItem(appName: selectedApp?.name ?? "", limit: selectedLimit)
                                 allGoals.insert(newGoal, at: 0)
                                 saveGoals()
                             //    submitSendGoalItem()
                             }
                             .padding()
                             .foregroundColor(.white)
-                            .background(allGoals.count < 3 && !allGoals.contains(where: { $0.appName == selectedApp }) ? .green.opacity(0.7) : .gray)
+                            .background(allGoals.count < 3 && !allGoals.contains(where: { $0.appName == selectedApp?.name }) ? .green.opacity(0.7) : .gray)
                             .cornerRadius(12)
                             .padding(.horizontal)
-                            .disabled(allGoals.count >= 3 || allGoals.contains(where: { $0.appName == selectedApp }))
+                            .disabled(allGoals.count >= 3 || allGoals.contains(where: { $0.appName == selectedApp?.name }))
                             
                             if allGoals.isEmpty {
                                 Text("No goals yet.")

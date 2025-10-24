@@ -19,7 +19,7 @@ struct NavigationTabs: View {
             StatsView().tabItem { Image(systemName: "chart.pie")
                 Text("Statistics")
         }
-            ReccomendationsView().tabItem { Image(systemName: "checkmark.circle.fill")
+            Reccomendations().tabItem { Image(systemName: "checkmark.circle.fill")
                 Text("Recommendation")
         }
             SettingsView().tabItem { Image(systemName: "gear")

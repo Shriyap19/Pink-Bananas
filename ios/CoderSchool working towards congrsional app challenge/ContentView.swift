@@ -592,6 +592,13 @@ struct ContentView: View {
     @ViewBuilder
     private func stepView(for step: OnboardingStep) -> some View {
         switch step {
+<<<<<<< HEAD
+=======
+        case .restrictedApps:
+            RestrictedAppsView(
+                restrictedApps: $onboarding.restrictedApps,
+                showFamilyPicker: $showFamilyPickerFromRestricted)
+>>>>>>> ec608c6 (Remove duplicate familymanager)
         case .birthday:
             BirthdayView(birthday: $onboarding.birthday)
         case .username:

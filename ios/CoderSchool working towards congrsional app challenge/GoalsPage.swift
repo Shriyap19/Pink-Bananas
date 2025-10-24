@@ -25,6 +25,7 @@ struct Feedback: Codable {
 
 
 struct GoalsPageView: View {
+    @EnvironmentObject var tracker: GoalTracker
     @State private var allGoals: [GoalItem] = []
     @State private var selectedApp = "Instagram"
     @State private var selectedLimit = "30 mins"
@@ -78,7 +79,7 @@ struct GoalsPageView: View {
                                 .frame(width: 120)
                                 .clipped()
                                 .padding(6)
-                                .background(Color(.systemGray6))
+                                .background(Color(.systemCyan))
                                 .cornerRadius(8)
                                 
                                 Text("for ")
@@ -92,7 +93,7 @@ struct GoalsPageView: View {
                                 .frame(width: 100)
                                 .clipped()
                                 .padding(6)
-                                .background(Color(.systemGray6))
+                                .background(Color(.systemCyan))
                                 .cornerRadius(8)
                                 
                                 Text("a day")
@@ -178,6 +179,7 @@ struct GoalsPageView: View {
     }
     
     struct GoalRowView: View {
+        @EnvironmentObject var tracker: GoalTracker
         @Binding var goal: GoalItem
         let daysToShow: Int
         var removeAction: () -> Void
@@ -222,10 +224,14 @@ struct GoalsPageView: View {
                             .fill(goal.completedDays.contains(i) ? .cyan : .cyan.opacity(0.3))
                             .frame(width: 28, height: 28)
                             .onTapGesture {
+                                let date = Calendar.current.date(byAdding: .day, value: -i, to: Date())!
+                                
                                 if goal.completedDays.contains(i) {
                                     goal.completedDays.remove(i)
+                                    tracker.streakDays[date] = false // Remove from calendar streak
                                 } else {
                                     goal.completedDays.insert(i)
+                                    tracker.streakDays[date] = true // Mark as completed in calendar
                                 }
                             }
                     }

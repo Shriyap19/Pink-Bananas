@@ -75,7 +75,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
     case features
     case statisticfeatures
     case goalfeatures
-    case restrictedApps
+//    case restrictedApps
     case birthday
     case name
     case email
@@ -265,70 +265,70 @@ struct ReviewScreen: View {
 }
 
 
-struct RestrictedAppsView: View {
-    @Binding var restrictedApps: [AppItem]
-    @EnvironmentObject var familyManager: FamilyControlsManager // controls familyPicker
-    @Binding var showFamilyPicker: Bool // controls is family picer, restoricted apps popus shows or not
-    
-
-    var body: some View {
-        VStack(alignment: .center, spacing: 30) {
-            Spacer()
-
-          
-            Text("Select Restricted Apps:")
-                .bold()
-                .font(.title)
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-
-            Text("Choose what apps you want restrictions to be applied to")
-                .font(.body)
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-
-            // Button to open FamilyActivityPicker
-            Button(action: {
-                if !familyManager.authorized {
-                    familyManager.requestAuthorization()
-                }
-                showFamilyPicker = true
-            }) {
-                HStack {
-                    Image(systemName: "square.stack")
-                    Text("Choose from device")
-                }
-                .padding(.vertical, 12)
-                .padding(.horizontal, 24)
-                .background(Color.white)
-                .foregroundColor(.cyan)
-                .cornerRadius(12)
-            }
-
-            Spacer()
-        }
-        .padding()
-        .sheet(isPresented: $showFamilyPicker) { //shows the pop up
-            FamilyActivityPicker(selection: $familyManager.selection) // apple privde the pop up display and the selection thin js tracks the change when u select
-                .presentationDetents([.medium, .large]) //adjust size
-                .onDisappear { // called when thing is closed
-                    // Save selection whenever picker closes
-                    familyManager.saveSelection()
-                    // Update your onboarding restricted apps if needed
-                    restrictedApps = familyManager.selection.applications.map {
-                        AppItem(name: $0.bundleIdentifier ?? "Unknown", iconName: $0.bundleIdentifier ?? "")
-                    }
-                    print("Picker dismissed. Restricted apps:", restrictedApps)
-                }
-        }
-        .onChange(of: familyManager.selection) {  // runs everytime the actuall varible saving the thing everytime the selection var changes
-            familyManager.saveSelection()
-        }
-
-        .background(Color.cyan.ignoresSafeArea())
-    }
-}
+//struct RestrictedAppsView: View {
+//    @Binding var restrictedApps: [AppItem]
+//    @EnvironmentObject var familyManager: FamilyControlsManager // controls familyPicker
+//    @Binding var showFamilyPicker: Bool // controls is family picer, restoricted apps popus shows or not
+//    
+//
+//    var body: some View {
+//        VStack(alignment: .center, spacing: 30) {
+//            Spacer()
+//
+//          
+//            Text("Select Restricted Apps:")
+//                .bold()
+//                .font(.title)
+//                .foregroundColor(.white)
+//                .multilineTextAlignment(.center)
+//
+//            Text("Choose what apps you want restrictions to be applied to")
+//                .font(.body)
+//                .foregroundColor(.white)
+//                .multilineTextAlignment(.center)
+//                .padding(.horizontal)
+//
+//            // Button to open FamilyActivityPicker
+//            Button(action: {
+//                if !familyManager.authorized {
+//                    familyManager.requestAuthorization()
+//                }
+//                showFamilyPicker = true
+//            }) {
+//                HStack {
+//                    Image(systemName: "square.stack")
+//                    Text("Choose from device")
+//                }
+//                .padding(.vertical, 12)
+//                .padding(.horizontal, 24)
+//                .background(Color.white)
+//                .foregroundColor(.cyan)
+//                .cornerRadius(12)
+//            }
+//
+//            Spacer()
+//        }
+//        .padding()
+//        .sheet(isPresented: $showFamilyPicker) { //shows the pop up
+//            FamilyActivityPicker(selection: $familyManager.selection) // apple privde the pop up display and the selection thin js tracks the change when u select
+//                .presentationDetents([.medium, .large]) //adjust size
+//                .onDisappear { // called when thing is closed
+//                    // Save selection whenever picker closes
+//                    familyManager.saveSelection()
+//                    // Update your onboarding restricted apps if needed
+//                    restrictedApps = familyManager.selection.applications.map {
+//                        AppItem(name: $0.bundleIdentifier ?? "Unknown", iconName: $0.bundleIdentifier ?? "")
+//                    }
+//                    print("Picker dismissed. Restricted apps:", restrictedApps)
+//                }
+//        }
+//        .onChange(of: familyManager.selection) {  // runs everytime the actuall varible saving the thing everytime the selection var changes
+//            familyManager.saveSelection()
+//        }
+//
+//        .background(Color.cyan.ignoresSafeArea())
+//    }
+//}
 
 
 
@@ -713,10 +713,6 @@ struct ContentView: View {
     @ViewBuilder
     private func stepView(for step: OnboardingStep) -> some View {
         switch step {
-        case .restrictedApps:
-            RestrictedAppsView(
-                restrictedApps: $onboarding.restrictedApps,
-                showFamilyPicker: $showFamilyPickerFromRestricted).environmentObject(familyManager)
         case .birthday:
             BirthdayView(birthday: $onboarding.birthday)
         case .username:

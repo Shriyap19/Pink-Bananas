@@ -3,7 +3,7 @@ import SwiftUI
 struct CustomCalenderView: View {
     @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding = false
     @State private var selectedDate: Date? = nil // The date user last tapped on (for showing overview box)
-    @State private var streakDays: [Date: Bool] = [:] // true if goal completed, var tracks the streak days
+    @EnvironmentObject var tracker: GoalTracker //true if goal completed, var tracks the streak days
     @State private var displayedMonth: Int = Calendar.current.component(.month, from: Date())
     @State private var displayedYear: Int = Calendar.current.component(.year, from: Date())
     // Currently displayed month and year in the calendar
@@ -60,8 +60,8 @@ struct CustomCalenderView: View {
     
     // 🔥 Current streak calculation
     private func currentStreak() -> Int {
-        let completedDays = streakDays.keys
-            .filter { streakDays[$0] == true }
+        let completedDays = tracker.streakDays.keys
+            .filter { tracker.streakDays[$0] == true }
             .sorted(by: <) // ascending
         
         guard !completedDays.isEmpty else { return 0 }
@@ -94,8 +94,8 @@ struct CustomCalenderView: View {
     
     // 🔥 Longest streak calculation
     private func longestStreak() -> Int {
-        let completedDays = streakDays.keys
-            .filter { streakDays[$0] == true }
+        let completedDays = tracker.streakDays.keys
+            .filter { tracker.streakDays[$0] == true }
             .sorted()
         
         var longest = 0
@@ -119,15 +119,15 @@ struct CustomCalenderView: View {
     
     var body: some View {
         VStack {
-            Text("UnScroll").font(.largeTitle).bold().foregroundStyle(.white)
-            Button("Reset Onboarding") {
-                hasCompletedOnboarding = false
-            }
-            .font(.headline)
-            .padding()
-            .background(Color.white)
-            .foregroundColor(.cyan)
-            .cornerRadius(10)
+           Text("UnScroll").font(.largeTitle).bold().foregroundStyle(.white)
+//            Button("Reset Onboarding") {
+//                hasCompletedOnboarding = false
+//            }
+//            .font(.headline)
+//            .padding()
+//            .background(Color.white)
+//            .foregroundColor(.cyan)
+//            .cornerRadius(10)
             
             // Month Navigation
             Spacer().frame(height: 50)
@@ -150,7 +150,7 @@ struct CustomCalenderView: View {
                     let today = calendar.startOfDay(for: Date())
                     let isFuture = date > today
                     
-                    let color: Color = streakDays[date] == true ? .green :
+                    let color: Color = tracker.isCompleted(on: date) ? .green :
                                        calendar.isDate(date, inSameDayAs: today) ? Color.gray.opacity(0.6) :
                                        Color.gray.opacity(0.3) // Decide circle color for each day:
                     // green if streak achieved
@@ -165,11 +165,11 @@ struct CustomCalenderView: View {
                         .onTapGesture {
                             if !isFuture { selectedDate = date } // single tap shows overview
                         }
-                        .simultaneousGesture(
-                            TapGesture(count: 2).onEnded {
-                                if !isFuture { streakDays[date] = true } // double tap marks streak
-                            }
-                        )
+//                        .simultaneousGesture(
+//                            TapGesture(count: 2).onEnded {
+//                                if !isFuture { tracker.streakDays[date] = true } // double tap marks streak
+//                            }
+//                        )
                 }
             }
             .padding()
@@ -177,8 +177,8 @@ struct CustomCalenderView: View {
             // MARK: Overview Box (Outside Grid)
             if let selected = selectedDate {
                 VStack {
-                    Text("Overview for \(selected, formatter: dateFormatter)")
-                    Text("Screen time: 3h 25m") // placeholder
+                    Text("Date: \(selected, formatter: dateFormatter)")
+                    
                 }
                 .foregroundColor(.white)
                 .padding()
@@ -233,5 +233,7 @@ struct CustomCalenderView: View {
 }
 
 #Preview {
-    CustomCalenderView()
+    let tracker = GoalTracker()
+    tracker.markGoalCompleted(on: Date())
+    return CustomCalenderView().environmentObject(tracker)
 }

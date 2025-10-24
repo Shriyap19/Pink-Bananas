@@ -121,6 +121,7 @@ class AppReminderManager {
 @MainActor
 class ScreenTimeManager: ObservableObject {
     static let shared = ScreenTimeManager()
+    let DAMcenter = DeviceActivityCenter()
     private let center = AuthorizationCenter.shared
     private let notifCenter = UNUserNotificationCenter.current()
     

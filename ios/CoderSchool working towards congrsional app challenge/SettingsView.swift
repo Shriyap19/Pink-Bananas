@@ -478,8 +478,8 @@ struct SettingsView: View {
                                     Text("Details").foregroundColor(.gray)
                                 }
                             }
-                            
-                            NavigationLink(destination: Text("Link to Nikita's page")) {
+
+                            NavigationLink(destination: GoalsPageView()) {
                                 HStack {
                                     Text("Change goals")
                                     Spacer()

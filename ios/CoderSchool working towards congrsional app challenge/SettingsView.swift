@@ -5,16 +5,6 @@ import DeviceActivity
 import FamilyControls
 import UserNotifications
 
-
-
-
-struct CustomApp: Identifiable, Codable, Hashable {
-    let id: String
-    let name: String
-    let appIcon: String
-    var isRestricted: Bool = false
-}
-
 @MainActor
 class AppUsageTracker: ObservableObject {
     @Published var activeApp: CustomApp? = nil
@@ -148,13 +138,20 @@ class ScreenTimeManager: ObservableObject {
                                           warningTime:DateComponents(minute:1))
     let activityName = DeviceActivityName("Pinterest Watcher")
     
+    @Published var restrictedApps: [RestrictedApp] = [] {
+        didSet{
+            saveRestrictedApps()
+        }
+    }
+    //@Binding var newRestrictedApp: RestrictedApp
     
     init() {
         Task {
+            loadRestrictedApps()
             await updateAuthorizationStatus()
             
         }
-        loadSelection()
+        //loadSelection()
     }
 
     func requestAuthorization() async {
@@ -199,30 +196,31 @@ class ScreenTimeManager: ObservableObject {
     }
     
     
-    func saveSelection() { // turnes apps selcted into code so can save and stores it in userdefaults
-        do {
-            let data = try PropertyListEncoder().encode(selection)
-            UserDefaults.standard.set(data, forKey: Self.savedSelectionKey)
-        } catch {
-            print("Failed to save FamilyActivitySelection:", error)
-        }
-    }
+//    func saveSelection(selection:FamilyActivitySelection) { // turnes apps selcted into code so can save and stores it in userdefaults
+//        do {
+//            let data = try PropertyListEncoder().encode(selection)
+//            UserDefaults.standard.set(data, forKey: restrictedapp.name)
+//        } catch {
+//            print("Failed to save FamilyActivitySelection:", error)
+//        }
+//    }
 
-    private func loadSelection() { // takes the saved from UserDefaults then decodes it so it can be displayed to user
-        guard let data = UserDefaults.standard.data(forKey: Self.savedSelectionKey) else { return }
-        do {
-            let saved = try PropertyListDecoder().decode(FamilyActivitySelection.self, from: data)
-            selection = saved
-        } catch {
-            print("Failed to load FamilyActivitySelection:", error)
-        }
-    }
+//    func loadSelection(restrictedapp:RestrictedApp) { // takes the saved from UserDefaults then decodes it so it can be displayed to user
+//        guard let data = UserDefaults.standard.data(forKey: restrictedapp.name) else { return }
+//        do {
+//            let saved = try PropertyListDecoder().decode(RestrictedApp.self, from: data)
+//            selection = saved.selection
+//        } catch {
+//            print("Failed to load FamilyActivitySelection:", error)
+//        }
+//    }
     
     func startMonitoring(){
         let pinterestEvent = DeviceActivityEvent(applications:selection.applicationTokens, threshold:DateComponents(minute:2))
         let pinterestEventName = DeviceActivityEvent.Name("Pinterest")
         do{
             print("Attempting to start monitoring")
+            print(selection.applications)
             try DAMcenter.startMonitoring(activityName, during: schedule, events: [pinterestEventName: pinterestEvent])
             
         }catch{
@@ -270,6 +268,22 @@ class ScreenTimeManager: ObservableObject {
         }
     }
     
+    func saveRestrictedApps() {
+        if let encoded = try? JSONEncoder().encode(restrictedApps) {
+            UserDefaults.standard.set(encoded, forKey: "restrictedApps")
+        }
+    }
+
+    func loadRestrictedApps() {
+        if let savedData = UserDefaults.standard.data(forKey: "restrictedApps"),
+           let decoded = try? JSONDecoder().decode([RestrictedApp].self, from: savedData) {
+            restrictedApps = decoded
+        }
+    }
+    func deleteApp(at offsets: IndexSet) {
+        restrictedApps.remove(atOffsets: offsets)
+    }
+    
 }
 
 // MARK: - iTunes response models
@@ -284,30 +298,28 @@ struct ItunesSearchResponse: Decodable {
 }
 
 class CustomAppsViewModel: ObservableObject {
+    static let shared = CustomAppsViewModel()
+    
     @Published var searchText = ""
     @Published var searchResults: [CustomApp] = []
-    @Published var selectedApps: [CustomApp] = [] {
-        didSet {
-            saveSelectedApps()
-        }
-    }
+    @Published var selectedApps: [CustomApp] = []
 
     private var cancellables = Set<AnyCancellable>()
 
     init() {
-        loadSelectedApps()
+       // loadSelectedApps()
 
-        $searchText
-            .removeDuplicates()
-            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
-            .sink { [weak self] text in
-                if text.isEmpty {
-                    self?.searchResults = []
-                } else {
-                    self?.searchApps(query: text)
-                }
-            }
-            .store(in: &cancellables)
+//        $searchText
+//            .removeDuplicates()
+//            .debounce(for: .milliseconds(500), scheduler: RunLoop.main)
+//            .sink { [weak self] text in
+//                if text.isEmpty {
+//                    self?.searchResults = []
+//                } else {
+//                    self?.searchApps(query: text)
+//                }
+//            }
+//            .store(in: &cancellables)
     }
 
     func searchApps(query: String) {
@@ -335,41 +347,45 @@ class CustomAppsViewModel: ObservableObject {
         }.resume()
     }
 
-    func saveSelectedApps() {
-        if let encoded = try? JSONEncoder().encode(selectedApps) {
-            UserDefaults.standard.set(encoded, forKey: "customApps")
-        }
-    }
-
-    func loadSelectedApps() {
-        if let savedData = UserDefaults.standard.data(forKey: "customApps"),
-           let decoded = try? JSONDecoder().decode([CustomApp].self, from: savedData) {
-            selectedApps = decoded
-        }
-    }
-
-    func toggleRestriction(for app: CustomApp) {
-        if let index = selectedApps.firstIndex(of: app) {
-            selectedApps[index].isRestricted.toggle()
-            // reassign to trigger didSet persistence
-            selectedApps = selectedApps
-        }
-    }
-
-    func deleteApp(at offsets: IndexSet) {
-        selectedApps.remove(atOffsets: offsets)
-    }
+//    func saveSelectedApps() {
+//        if let encoded = try? JSONEncoder().encode(selectedApps) {
+//            UserDefaults.standard.set(encoded, forKey: "customApps")
+//        }
+//    }
+//
+//    func loadSelectedApps() {
+//        if let savedData = UserDefaults.standard.data(forKey: "customApps"),
+//           let decoded = try? JSONDecoder().decode([CustomApp].self, from: savedData) {
+//            selectedApps = decoded
+//        }
+//    }
+//
+//    func toggleRestriction(for app: CustomApp) {
+//        if let index = selectedApps.firstIndex(of: app) {
+//            selectedApps[index].isRestricted.toggle()
+//            // reassign to trigger didSet persistence
+//            selectedApps = selectedApps
+//        }
+//    }
+//
+//    func deleteApp(at offsets: IndexSet) {
+//        selectedApps.remove(atOffsets: offsets)
+//    }
 }
 
 struct SearchView: View {
     @EnvironmentObject var viewModel: CustomAppsViewModel
     @State private var recentlyAddedAppID: String? = nil
+    @Binding var restrictedApp: RestrictedApp
 
     var body: some View {
         VStack {
             TextField("Search for apps...", text: $viewModel.searchText)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
+                .onSubmit{
+                    viewModel.searchApps(query: viewModel.searchText)
+                }
 
             List {
                 ForEach(viewModel.searchResults) { app in
@@ -377,7 +393,7 @@ struct SearchView: View {
                         Text(app.name)
                         Spacer()
                         if recentlyAddedAppID == app.id {
-                            Text("Added!")
+                            Text("Selected!")
                                 .foregroundColor(.green)
                                 .transition(.scale)
                                 .animation(.easeInOut, value: recentlyAddedAppID)
@@ -387,13 +403,14 @@ struct SearchView: View {
                                     withAnimation(.spring()) {
                                         viewModel.selectedApps.insert(app, at: 0)
                                         recentlyAddedAppID = app.id
+                                        restrictedApp.customApp = app
                                     }
 
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                        withAnimation {
-                                            recentlyAddedAppID = nil
-                                        }
-                                    }
+//                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                                        withAnimation {
+//                                            recentlyAddedAppID = nil
+//                                        }
+//                                    }
                                 }
                             }
                             .buttonStyle(.borderedProminent)
@@ -428,17 +445,20 @@ enum NavigationDestinations: String, CaseIterable, Hashable{
 }
 
 struct SettingsView: View {
-    @StateObject private var viewModel = CustomAppsViewModel()
-    @StateObject private var screenTimeManager = ScreenTimeManager.shared
+    @StateObject private var viewModel = CustomAppsViewModel.shared
+    @ObservedObject private var screenTimeManager = ScreenTimeManager.shared
     @AppStorage("IsLoggedIn") var isLoggedIn: Bool = true
     @State private var isPressed = false
     @State private var path = NavigationPath()
     let routes = NavigationDestinations.allCases
+    @State var itunesSelection: CustomApp?
+    @State var restrictedApp:RestrictedApp = RestrictedApp(name: "",customApp:CustomApp(id: "", name: "", appIcon: ""),threshold: 0)
 
     private func handleLogout() {
         isLoggedIn = false
         print("Logged out")
     }
+    @State var selection: FamilyActivitySelection = FamilyActivitySelection()
 
     var body: some View {
         NavigationStack(path:$path) {
@@ -510,19 +530,9 @@ struct SettingsView: View {
                     
                     Section(header: Text("Limited-use Apps").font(.custom("futura", size: 25))
                         .foregroundColor(.white)) {
-                            ForEach(viewModel.selectedApps) { app in
-                                Toggle(isOn: Binding(
-                                    get: {
-                                        // Find the app in the array and return its current restricted status
-                                        viewModel.selectedApps.first { $0.id == app.id }?.isRestricted ?? false
-                                    },
-                                    set: { newValue in
-                                        // set via viewModel helper
-                                        viewModel.toggleRestriction(for: app)
-                                    }
-                                )){
+                            ForEach(screenTimeManager.restrictedApps, id:\.self) { app in
                                     HStack{
-                                        AsyncImage(url: URL(string:app.appIcon)){image in
+                                        AsyncImage(url: URL(string:app.customApp.appIcon)){image in
                                             image.resizable()
                                         } placeholder:{
                                             ProgressView() //display progressview while loading the icons
@@ -530,17 +540,17 @@ struct SettingsView: View {
                                             .frame(width:50,height:50)
                                             .clipShape(RoundedRectangle(cornerRadius: 12))
                                         Text(app.name)
-                                    }
+                                    
                                 }
                             }
-                            .onDelete(perform: viewModel.deleteApp)
+                            .onDelete(perform: screenTimeManager.deleteApp)
                             
                             NavigationLink(value:NavigationDestinations.RestrictedAppsView) {
-                                HStack {
-                                    Text("Add new app")
-                                    Spacer()
-                                    Text("Details").foregroundColor(.gray)
-                                }
+                                    HStack {
+                                        Text("Add new app")
+                                        Spacer()
+                                        Text("Details").foregroundColor(.gray)
+                                    }
                             }
                         }
                         .environmentObject(viewModel)
@@ -567,7 +577,7 @@ struct SettingsView: View {
                     Section {
                         Button(action: {
                             Task{
-                                ScreenTimeManager.shared.startMonitoring()
+                                screenTimeManager.startMonitoring()
                             }}) {
                             Text("Start monitoring")
                                 .font(.custom("futura", size: 25))
@@ -589,7 +599,7 @@ struct SettingsView: View {
                     Section {
                         Button(action: {
                             Task{
-                                ScreenTimeManager.shared.stopMonitoring()
+                                screenTimeManager.stopMonitoring()
                             }}) {
                             Text("Stop monitoring")
                                 .font(.custom("futura", size: 25))
@@ -613,27 +623,26 @@ struct SettingsView: View {
                             Text("Get User Defaults")
                         }
                         Button(action:{Task{
-                            await ScreenTimeManager.shared.scheduleNotification()
+                            await screenTimeManager.scheduleNotification()
                         }}){
                             Text("Get User Defaults")
                         }
                     }
                     .listRowBackground(Color(.cyan))
-                    
                 }
             }
             .scrollContentBackground(.hidden)
+            .task{print(screenTimeManager.restrictedApps)}
             .background(Color.cyan)
             .navigationDestination(for: NavigationDestinations.self){route in
                 switch route{
                 case .SearchView:
-                    SearchView().environmentObject(viewModel)
+                    SearchView(restrictedApp:$restrictedApp).environmentObject(viewModel)
                 case .RestrictedAppsView:
-                    RestrictedAppsView()
+                    RestrictedAppsView(restrictedApp:$restrictedApp, selection:$selection)
                 case .ValidateRestrictedAppView:
-                    ValidateRestrictedAppView()
+                    ValidateRestrictedAppView(path:$path, restrictedApp:$restrictedApp, selection:$selection)
                 }
-                
             }
         }
     }

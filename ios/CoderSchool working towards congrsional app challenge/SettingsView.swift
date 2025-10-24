@@ -574,61 +574,61 @@ struct SettingsView: View {
                         )
                     }
                     .listRowBackground(Color(.cyan))
-                    Section {
-                        Button(action: {
-                            Task{
-                                screenTimeManager.startMonitoring()
-                            }}) {
-                            Text("Start monitoring")
-                                .font(.custom("futura", size: 25))
-                                .foregroundColor(.white)
-                                .padding(.vertical, 10)
-                                .padding(.horizontal, 20)
-                                .background(Color.green)
-                                .cornerRadius(10)
-                        }
-                        .buttonStyle(.plain)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .simultaneousGesture(
-                            DragGesture(minimumDistance:0)
-                                .onChanged { _ in isPressed = true }
-                                .onEnded { _ in isPressed = false }
-                        )
-                    }
-                    .listRowBackground(Color(.cyan))
-                    Section {
-                        Button(action: {
-                            Task{
-                                screenTimeManager.stopMonitoring()
-                            }}) {
-                            Text("Stop monitoring")
-                                .font(.custom("futura", size: 25))
-                                .foregroundColor(.white)
-                                .padding(.vertical, 10)
-                                .padding(.horizontal, 20)
-                                .background(Color.orange)
-                                .cornerRadius(10)
-                        }
-                        .buttonStyle(.plain)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .simultaneousGesture(
-                            DragGesture(minimumDistance:0)
-                                .onChanged { _ in isPressed = true }
-                                .onEnded { _ in isPressed = false }
-                        )
-                        Button(action:{Task{
-                            let userD =  UserDefaults(suiteName: "group.com.tcsm.orangeteamproject")?.string(forKey: "shouldShowAlert")
-                            print("\(userD)")
-                        }}){
-                            Text("Get User Defaults")
-                        }
-                        Button(action:{Task{
-                            await screenTimeManager.scheduleNotification()
-                        }}){
-                            Text("Get User Defaults")
-                        }
-                    }
-                    .listRowBackground(Color(.cyan))
+//                    Section {
+//                        Button(action: {
+//                            Task{
+//                                screenTimeManager.startMonitoring()
+//                            }}) {
+//                            Text("Start monitoring")
+//                                .font(.custom("futura", size: 25))
+//                                .foregroundColor(.white)
+//                                .padding(.vertical, 10)
+//                                .padding(.horizontal, 20)
+//                                .background(Color.green)
+//                                .cornerRadius(10)
+//                        }
+//                        .buttonStyle(.plain)
+//                        .frame(maxWidth: .infinity, alignment: .center)
+//                        .simultaneousGesture(
+//                            DragGesture(minimumDistance:0)
+//                                .onChanged { _ in isPressed = true }
+//                                .onEnded { _ in isPressed = false }
+//                        )
+//                    }
+//                    .listRowBackground(Color(.cyan))
+//                    Section {
+//                        Button(action: {
+//                            Task{
+//                                screenTimeManager.stopMonitoring()
+//                            }}) {
+//                            Text("Stop monitoring")
+//                                .font(.custom("futura", size: 25))
+//                                .foregroundColor(.white)
+//                                .padding(.vertical, 10)
+//                                .padding(.horizontal, 20)
+//                                .background(Color.orange)
+//                                .cornerRadius(10)
+//                        }
+//                        .buttonStyle(.plain)
+//                        .frame(maxWidth: .infinity, alignment: .center)
+//                        .simultaneousGesture(
+//                            DragGesture(minimumDistance:0)
+//                                .onChanged { _ in isPressed = true }
+//                                .onEnded { _ in isPressed = false }
+//                        )
+//                        Button(action:{Task{
+//                            let userD =  UserDefaults(suiteName: "group.com.tcsm.orangeteamproject")?.string(forKey: "shouldShowAlert")
+//                            print("\(userD)")
+//                        }}){
+//                            Text("Get User Defaults")
+//                        }
+//                        Button(action:{Task{
+//                            await screenTimeManager.scheduleNotification()
+//                        }}){
+//                            Text("Get User Defaults")
+//                        }
+//                    }
+//                    .listRowBackground(Color(.cyan))
                 }
             }
             .scrollContentBackground(.hidden)

@@ -44,10 +44,6 @@ struct AppItem: Identifiable, Hashable, Codable {
 }
 
 struct Onboarding {
-<<<<<<< HEAD
-=======
-    var restrictedApps: [AppItem] = []
->>>>>>> e57ed18 (Replaced features image, Restructured onboarding to have acces to all varibles, Added Home page, And login and sighnup functionality)
     var birthday = Birthday()
     var username: String = ""
     var name: String = ""
@@ -55,13 +51,6 @@ struct Onboarding {
     var email: String = ""
     var firstsurvey: [String: String] = [:]
 
-<<<<<<< HEAD
-=======
-//    struct RestrictedApps {
-//        var selectedApps: [AppItem] = []
-//    }
-
->>>>>>> e57ed18 (Replaced features image, Restructured onboarding to have acces to all varibles, Added Home page, And login and sighnup functionality)
     struct Birthday {
         var value = Date()
     }

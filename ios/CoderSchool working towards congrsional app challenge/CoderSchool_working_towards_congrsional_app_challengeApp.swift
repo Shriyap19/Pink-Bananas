@@ -11,12 +11,13 @@ import DeviceActivity
 import FamilyControls
 
 @main
-
 struct CoderSchool_working_towards_congrsional_app_challengeApp: App {
+    @StateObject private var tracker = GoalTracker() //  new shared streak/goal data model
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(tracker)       // new shared tracker is also global
         }
-
     }
 }

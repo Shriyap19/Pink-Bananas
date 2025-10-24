@@ -11,6 +11,7 @@ import FamilyControls
 
 struct ValidateRestrictedAppView: View {
     @State var hours: Int = 1
+<<<<<<< HEAD
     @Binding var path: NavigationPath
     @State var appName: String = ""
     @Binding var restrictedApp: RestrictedApp
@@ -18,6 +19,12 @@ struct ValidateRestrictedAppView: View {
     @ObservedObject var manager = ScreenTimeManager.shared
     
     
+=======
+    @State private var selectedCategory: String = "Social"
+    let categories = ["Gaming", "Entertainment", "Other", "Social"]
+
+
+>>>>>>> fef953a (Adding connection between Homepage and Goals aswell as editing resritcted apps to new page)
 
     var body: some View {
         VStack() {
@@ -48,7 +55,30 @@ struct ValidateRestrictedAppView: View {
             Text(" If you have screen time enabled you can find your daily average there").font(.callout).multilineTextAlignment(.center)
             Spacer()
             
-            Button(action:{
+            Text("What category would you put this into of the following?").font(.title2).multilineTextAlignment(.center)
+            Menu {
+                            ForEach(categories, id: \.self) { category in
+                                Button(category) {
+                                    selectedCategory = category
+                                }
+                            }
+                        } label: {
+                            HStack {
+                                Text(selectedCategory)
+                                    .foregroundColor(.white)
+                                Spacer()
+                                Image(systemName: "chevron.down")
+                                    .foregroundColor(.white.opacity(0.8))
+                            }
+                            .padding()
+                            .background(.white.opacity(0.2))
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                            .padding(.horizontal, 29)
+                        }
+            
+            
+            
+Button(action:{
                 restrictedApp.name = appName
                 restrictedApp.threshold = hours
                 restrictedApp.tokens = selection.applicationTokens
@@ -57,7 +87,8 @@ struct ValidateRestrictedAppView: View {
                 path.removeLast(path.count)
             }){
                 Text("Submit").font(.headline).padding().foregroundStyle(.cyan).background(.white).clipShape(RoundedRectangle(cornerRadius: 10))
-            }
+            }            
+            
             Spacer()
 
         }.foregroundColor(.white)

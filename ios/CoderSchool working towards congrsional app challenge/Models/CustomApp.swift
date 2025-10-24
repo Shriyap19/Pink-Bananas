@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+struct CustomApp: Identifiable, Codable, Hashable {
+    let id: String
+    let name: String
+    let appIcon: String
+    var isRestricted: Bool = false
+}

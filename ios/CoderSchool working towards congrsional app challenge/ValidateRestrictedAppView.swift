@@ -11,20 +11,13 @@ import FamilyControls
 
 struct ValidateRestrictedAppView: View {
     @State var hours: Int = 1
-<<<<<<< HEAD
     @Binding var path: NavigationPath
     @State var appName: String = ""
     @Binding var restrictedApp: RestrictedApp
     @Binding var selection: FamilyActivitySelection
     @ObservedObject var manager = ScreenTimeManager.shared
-    
-    
-=======
     @State private var selectedCategory: String = "Social"
     let categories = ["Gaming", "Entertainment", "Other", "Social"]
-
-
->>>>>>> fef953a (Adding connection between Homepage and Goals aswell as editing resritcted apps to new page)
 
     var body: some View {
         VStack() {

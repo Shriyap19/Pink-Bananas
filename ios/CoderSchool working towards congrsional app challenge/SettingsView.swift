@@ -414,6 +414,7 @@ struct SearchView: View {
                                 }
                             }
                             .buttonStyle(.borderedProminent)
+                            .tint(.blue)
                             .scaleEffect(recentlyAddedAppID == app.id ? 1.1 : 1.0)
                         }
                     }
@@ -632,7 +633,6 @@ struct SettingsView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .task{print(screenTimeManager.restrictedApps)}
             .background(Color.cyan)
             .navigationDestination(for: NavigationDestinations.self){route in
                 switch route{

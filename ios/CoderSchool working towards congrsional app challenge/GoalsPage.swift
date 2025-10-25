@@ -32,13 +32,10 @@ struct Feedback: Codable {
 }
 
 struct GoalsPageView: View {
-<<<<<<< HEAD
 
     @AppStorage("allGoalsData") private var allGoalsData: Data = Data()
 
-=======
     @EnvironmentObject var tracker: GoalTracker
->>>>>>> fef953a (Adding connection between Homepage and Goals aswell as editing resritcted apps to new page)
     @State private var allGoals: [GoalItem] = []
     
     @ObservedObject var manager = ScreenTimeManager.shared

@@ -16,8 +16,7 @@ struct CoderSchool_working_towards_congrsional_app_challengeApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(tracker)       // new shared tracker is also global
+            ContentView().environmentObject(tracker)       // new shared tracker is also global
         }
     }
 }

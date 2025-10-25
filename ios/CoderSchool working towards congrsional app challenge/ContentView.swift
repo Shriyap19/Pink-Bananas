@@ -26,6 +26,8 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
     case features
     case statisticfeatures
     case goalfeatures
+
+//    case restrictedApps
     case birthday
     case name
     case email
@@ -44,6 +46,7 @@ struct AppItem: Identifiable, Hashable, Codable {
 }
 
 struct Onboarding {
+    var restrictedApps: [AppItem] = []
     var birthday = Birthday()
     var username: String = ""
     var name: String = ""
@@ -51,6 +54,9 @@ struct Onboarding {
     var email: String = ""
     var firstsurvey: [String: String] = [:]
 
+//    struct RestrictedApps {
+//        var selectedApps: [AppItem] = []
+//    }
     struct Birthday {
         var value = Date()
     }
@@ -592,13 +598,6 @@ struct ContentView: View {
     @ViewBuilder
     private func stepView(for step: OnboardingStep) -> some View {
         switch step {
-<<<<<<< HEAD
-=======
-        case .restrictedApps:
-            RestrictedAppsView(
-                restrictedApps: $onboarding.restrictedApps,
-                showFamilyPicker: $showFamilyPickerFromRestricted)
->>>>>>> ec608c6 (Remove duplicate familymanager)
         case .birthday:
             BirthdayView(birthday: $onboarding.birthday)
         case .username:

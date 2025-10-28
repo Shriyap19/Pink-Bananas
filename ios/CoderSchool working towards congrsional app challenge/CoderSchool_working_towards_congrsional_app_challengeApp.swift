@@ -11,12 +11,14 @@ import DeviceActivity
 import FamilyControls
 
 @main
-struct CoderSchool_working_towards_congrsional_app_challengeApp: App {
-    @StateObject private var tracker = GoalTracker() //  new shared streak/goal data model
 
+struct CoderSchool_working_towards_congrsional_app_challengeApp: App {
+    @StateObject private var familyManager = FamilyControlsManager() //so varible is for app, not just onboarding
     var body: some Scene {
         WindowGroup {
-            ContentView().environmentObject(tracker)       // new shared tracker is also global
+
+            ContentView().environmentObject(familyManager) //  makes it global
         }
+
     }
 }

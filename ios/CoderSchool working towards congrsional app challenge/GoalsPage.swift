@@ -1,27 +1,18 @@
 import SwiftUI
 
-enum GoalStatus: String, Codable {
+enum GoalStatus {
     case notChecked
     case achieved
     case failed
 }
 
-struct GoalItem: Identifiable, Codable, Equatable, Hashable {
-    let id: UUID
+struct GoalItem: Identifiable {
+    let id = UUID()
     var appName: String
     var limit: String
     var completedDays: Set<Int> = []
     var status: GoalStatus = .notChecked
-    var currentDay:Int = 0
     
-    init(id: UUID = UUID(), appName: String, limit: String, completedDays: Set<Int> = [], status: GoalStatus = .notChecked) {
-        self.id = id
-        self.appName = appName
-        self.limit = limit
-        self.completedDays = completedDays
-        self.status = status
-    }
-
     var text: String {
         "I want to limit \(appName) for \(limit) a day."
     }
@@ -32,44 +23,31 @@ struct Feedback: Codable {
     var limit: String
 }
 
+
 struct GoalsPageView: View {
-
-    @AppStorage("allGoalsData") private var allGoalsData: Data = Data()
-
-    @EnvironmentObject var tracker: GoalTracker
     @State private var allGoals: [GoalItem] = []
-    
-    @ObservedObject var manager = ScreenTimeManager.shared
-    @State private var selectedApp: RestrictedApp? = nil
+    @State private var selectedApp = "Instagram"
     @State private var selectedLimit = "30 mins"
     
+    
+    let apps = ["Instagram", "TikTok", "YouTube", "Snapchat", "Twitter"]
     let limits = ["15 mins", "30 mins", "1 hr", "2 hrs"]
     let daysToShow = 7
-
-    func loadGoals() {
-        if let decoded = try? JSONDecoder().decode([GoalItem].self, from: allGoalsData) {
-            allGoals = decoded
-        }
-    }
-
-    func saveGoals() {
-        if let encoded = try? JSONEncoder().encode(allGoals) {
-            allGoalsData = encoded
-        }
-    }
-
-    func parseLimit(_ limit: String) -> Float {
-        if limit.contains("15 mins") { return 0.25 }
-        if limit.contains("30 mins") { return 0.5 }
-        if limit.contains("1 hr") || limit.contains("1 hrs") { return 1.0 }
-        if limit.contains("2 hrs") { return 2.0 }
+    
+    
+    
+    func parseLimit(_ limit: String) -> TimeInterval {
+        if limit.contains("15") { return 15.0 * 60.0 }
+        if limit.contains("30") { return 30.0 * 60.0 }
+        if limit.contains("1 hr") || limit.contains("1 hrs") { return 60.0 * 60.0 }
+        if limit.contains("2 hrs") { return 2.0 * 60.0 * 60.0 }
         return 0
     }
     
-  // func submitSendGoalItem() {
-    //    let feedbackData = Feedback(appName: selectedApp, limit: selectedLimit)
-        //postFeedback(feedback: feedbackData)
-  //  }
+    func submitSendGoalItem() {
+        let feedbackData = Feedback(appName: selectedApp, limit: selectedLimit)
+            postFeedback(feedback: feedbackData)
+    }
     
     var body: some View {
         ZStack {
@@ -92,17 +70,15 @@ struct GoalsPageView: View {
                                 Text("I want to limit ")
                                     .font(.custom("Futura", size: 18))
                                     .foregroundStyle(.white)
-                               
+                                
                                 Picker("", selection: $selectedApp) {
-                                    ForEach(manager.restrictedApps, id: \.self) {app in
-                                        Text(app.name).tag(app as RestrictedApp?)
-                                    }
+                                    ForEach(apps, id: \.self) { Text($0) }
                                 }
                                 .pickerStyle(MenuPickerStyle())
                                 .frame(width: 120)
                                 .clipped()
                                 .padding(6)
-                                .background(Color(.systemCyan))
+                                .background(Color(.systemGray6))
                                 .cornerRadius(8)
                                 
                                 Text("for ")
@@ -116,7 +92,7 @@ struct GoalsPageView: View {
                                 .frame(width: 100)
                                 .clipped()
                                 .padding(6)
-                                .background(Color(.systemCyan))
+                                .background(Color(.systemGray6))
                                 .cornerRadius(8)
                                 
                                 Text("a day")
@@ -128,34 +104,20 @@ struct GoalsPageView: View {
                             .multilineTextAlignment(.center)
                             
                             Button("Save Goal") {
-                                let isAppAlreadyUsed = allGoals.contains { $0.appName == selectedApp?.name }
+                                let isAppAlreadyUsed = allGoals.contains { $0.appName == selectedApp }
                                 guard !isAppAlreadyUsed, allGoals.count < 3 else { return }
                                 
-                                guard parseLimit(selectedLimit) < Float(selectedApp?.threshold ?? 0) else{
-                                    return
-                                }
-                                guard let app = selectedApp, !app.name.isEmpty else{
-                                    return
-                                }
-                                
-                                let newGoal = GoalItem(appName:app.name, limit: selectedLimit)
-                                
-                                if (selectedApp != nil){
-                                    let monitoring = manager.startMonitoring(app:app, goalLimit:parseLimit(selectedLimit))
-                                    if monitoring {
-                                        allGoals.insert(newGoal, at: 0)
-                                        saveGoals()
-                                    }
-                                }
-                                
-                            //    submitSendGoalItem()
+                                let newGoal = GoalItem(appName: selectedApp, limit: selectedLimit)
+                                allGoals.insert(newGoal, at: 0)
+                                submitSendGoalItem()
                             }
                             .padding()
                             .foregroundColor(.white)
-                            .background(allGoals.count < 3 && !allGoals.contains(where: { $0.appName == selectedApp?.name }) ? .green.opacity(0.7) : .gray)
+                            .background(allGoals.count < 3 && !allGoals.contains(where: { $0.appName == selectedApp }) ? .green.opacity(0.7) : .gray)
                             .cornerRadius(12)
                             .padding(.horizontal)
-                            .disabled(allGoals.count >= 3 || allGoals.contains(where: { $0.appName == selectedApp?.name }))
+                            .disabled(allGoals.count >= 3 || allGoals.contains(where: { $0.appName == selectedApp }))
+                            
                             
                             if allGoals.isEmpty {
                                 Text("No goals yet.")
@@ -164,11 +126,9 @@ struct GoalsPageView: View {
                                     .padding(.horizontal)
                             } else {
                                 ForEach($allGoals) { $goal in
-                                    GoalRowView(goal: $goal, daysToShow: daysToShow, saveAction: saveGoals) {
-                                        //This is removeAction
+                                    GoalRowView(goal: $goal, daysToShow: daysToShow) {
                                         if let index = allGoals.firstIndex(where: { $0.id == goal.id }) {
                                             allGoals.remove(at: index)
-                                            saveGoals()
                                         }
                                     }
                                 }
@@ -183,8 +143,6 @@ struct GoalsPageView: View {
                                     if !allGoals.isEmpty {
                                         Button("Delete All Goals") {
                                             allGoals.removeAll()
-                                            manager.stopAllMonitoring()
-                                            saveGoals()
                                         }
                                         .font(.system(size: 14))
                                         .padding(8)
@@ -210,40 +168,19 @@ struct GoalsPageView: View {
                                 }
                             }
                             .padding(.top)
+                            
                             Spacer().frame(height: 40)
                         }
                     }
                 }
             }
         }
-        .onAppear {
-            loadGoals()
-        }
-        .onReceive(manager.$goalStatuses, perform: {statuses in
-            var changed = false
-            for i in allGoals.indices {
-                let appName = allGoals[i].appName
-                if let fulfilled = statuses[appName] {
-                    let newStatus: GoalStatus = fulfilled ? .achieved : .failed
-                    if allGoals[i].status != newStatus {
-                        allGoals[i].status = newStatus
-                        changed = true
-                    }
-                }
-            }
-            if changed {
-                saveGoals()
-            }
-        })
     }
     
     struct GoalRowView: View {
-        @EnvironmentObject var tracker: GoalTracker
         @Binding var goal: GoalItem
         let daysToShow: Int
-        var saveAction: () -> Void
         var removeAction: () -> Void
-        @ObservedObject var manager = ScreenTimeManager.shared
         
         var body: some View {
             VStack(alignment: .leading, spacing: 10) {
@@ -262,7 +199,6 @@ struct GoalsPageView: View {
                     Button("Reset") {
                         goal.completedDays.removeAll()
                         goal.status = .notChecked
-                        saveAction()
                     }
                     .font(.system(size: 12))
                     .padding(6)
@@ -271,17 +207,13 @@ struct GoalsPageView: View {
                     .cornerRadius(12)
                     
                     Button("X") {
-                        manager.stopMonitoring(appName: goal.appName)
                         removeAction()
-                        saveAction()
-                        
                     }
                     .font(.system(size: 14, weight: .bold))
                     .frame(width: 28, height: 28)
                     .background(Color.red.opacity(0.7))
                     .foregroundColor(.white)
                     .cornerRadius(14)
-                    .task{print(goal.completedDays)}
                 }
                 
                 HStack(spacing: 12) {
@@ -290,16 +222,11 @@ struct GoalsPageView: View {
                             .fill(goal.completedDays.contains(i) ? .cyan : .cyan.opacity(0.3))
                             .frame(width: 28, height: 28)
                             .onTapGesture {
-                                let date = Calendar.current.date(byAdding: .day, value: -i, to: Date())!
-                                
                                 if goal.completedDays.contains(i) {
                                     goal.completedDays.remove(i)
-                                    tracker.streakDays[date] = false // Remove from calendar streak
                                 } else {
                                     goal.completedDays.insert(i)
-                                    tracker.streakDays[date] = true // Mark as completed in calendar
                                 }
-                               saveAction()
                             }
                     }
                 }
@@ -311,16 +238,23 @@ struct GoalsPageView: View {
         }
     }
 }
-
 extension GoalsPageView {
     func postFeedback(feedback: Feedback) {
         guard let url = URL(string: "mongodb+srv://montgomerycoderschool:theCatOnTheCOMPUTERRR@cluster0.b9stmdy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&ssl=true") else { return }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        // Save Goal data even when the app restarts
+        // a. appstorage
+        // b. core data stack
+        // c. maybe send it straight to the database
+        
+        // OPTIONAL TODO: Encode feedback and send with URLSession
+        //1. Encode Goal Data
+        //2. attached encoded data to request
+        //3. send request
+        
+        
     }
-}
-
-#Preview {
-    GoalsPageView()
 }

@@ -3,22 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		27517DB42E95BDF70063DE12 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27517DB32E95BDF70063DE12 /* ContentView.swift */; };
-		27D365852EAC25FB001CD6FA /* CustomApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D365822EAC25FA001CD6FA /* CustomApp.swift */; };
-		27D365862EAC25FB001CD6FA /* RestrictedApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D365832EAC25FA001CD6FA /* RestrictedApp.swift */; };
-		27D365892EAC261F001CD6FA /* ValidateRestrictedAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D365882EAC261F001CD6FA /* ValidateRestrictedAppView.swift */; };
-		27D3658A2EAC261F001CD6FA /* RestrictedAppsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D365872EAC261F001CD6FA /* RestrictedAppsView.swift */; };
-		27D365A62EAC582A001CD6FA /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D365A42EAC582A001CD6FA /* OnboardingViewModel.swift */; };
-		27D365A82EAC582A001CD6FA /* GoalTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D365A22EAC582A001CD6FA /* GoalTracker.swift */; };
-		27D365A92EAC582A001CD6FA /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D365A32EAC582A001CD6FA /* LoginViewModel.swift */; };
-		27D365AA2EAC582A001CD6FA /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D365A52EAC582A001CD6FA /* UserModel.swift */; };
-		27D365AB2EAC582A001CD6FA /* CustomCalenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27D365A02EAC582A001CD6FA /* CustomCalenderView.swift */; };
-		27D3660D2EAFD02B001CD6FA /* DeviceActivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27D365F42EAFCE41001CD6FA /* DeviceActivity.framework */; };
-		27D366152EAFD02B001CD6FA /* DAM.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 27D3660C2EAFD02B001CD6FA /* DAM.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		27DDFE622E9A917B00A3CFC2 /* GoalsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27DDFE612E9A917B00A3CFC2 /* GoalsPage.swift */; };
 		903CADC02E679AF9001D63A6 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 903CADBC2E679AF9001D63A6 /* LoginView.swift */; };
 		903CADC12E679AF9001D63A6 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 903CADBD2E679AF9001D63A6 /* StatsView.swift */; };
@@ -31,43 +20,8 @@
 		AAD60A492E5F6BA300940EF7 /* Reccomendations.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAD60A482E5F6B9E00940EF7 /* Reccomendations.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		27D366132EAFD02B001CD6FA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 90459F8B2DE24C2A0045BAB9 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 27D3660B2EAFD02B001CD6FA;
-			remoteInfo = DAM;
-		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		27D366022EAFCE41001CD6FA /* Embed Foundation Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				27D366152EAFD02B001CD6FA /* DAM.appex in Embed Foundation Extensions */,
-			);
-			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		27517DB32E95BDF70063DE12 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		27D365822EAC25FA001CD6FA /* CustomApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomApp.swift; sourceTree = "<group>"; };
-		27D365832EAC25FA001CD6FA /* RestrictedApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestrictedApp.swift; sourceTree = "<group>"; };
-		27D365872EAC261F001CD6FA /* RestrictedAppsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestrictedAppsView.swift; sourceTree = "<group>"; };
-		27D365882EAC261F001CD6FA /* ValidateRestrictedAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidateRestrictedAppView.swift; sourceTree = "<group>"; };
-		27D365A02EAC582A001CD6FA /* CustomCalenderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomCalenderView.swift; sourceTree = "<group>"; };
-		27D365A22EAC582A001CD6FA /* GoalTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalTracker.swift; sourceTree = "<group>"; };
-		27D365A32EAC582A001CD6FA /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
-		27D365A42EAC582A001CD6FA /* OnboardingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
-		27D365A52EAC582A001CD6FA /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
-		27D365F42EAFCE41001CD6FA /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = System/Library/Frameworks/DeviceActivity.framework; sourceTree = SDKROOT; };
-		27D3660C2EAFD02B001CD6FA /* DAM.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DAM.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		27DDFE612E9A917B00A3CFC2 /* GoalsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoalsPage.swift; sourceTree = "<group>"; };
 		903CADBC2E679AF9001D63A6 /* LoginView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		903CADBD2E679AF9001D63A6 /* StatsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
@@ -82,29 +36,7 @@
 		AAD60A4A2E62664800940EF7 /* CoderSchool working towards congrsional app challenge.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "CoderSchool working towards congrsional app challenge.entitlements"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		27D366162EAFD02B001CD6FA /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = 27D3660B2EAFD02B001CD6FA /* DAM */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		27D3660E2EAFD02B001CD6FA /* DAM */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (27D366162EAFD02B001CD6FA /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = DAM; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
-
 /* Begin PBXFrameworksBuildPhase section */
-		27D366092EAFD02B001CD6FA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				27D3660D2EAFD02B001CD6FA /* DeviceActivity.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		90459F902DE24C2A0045BAB9 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -115,29 +47,10 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		27D365842EAC25FA001CD6FA /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				27D365822EAC25FA001CD6FA /* CustomApp.swift */,
-				27D365832EAC25FA001CD6FA /* RestrictedApp.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		27D365F32EAFCE41001CD6FA /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				27D365F42EAFCE41001CD6FA /* DeviceActivity.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		90459F8A2DE24C2A0045BAB9 = {
 			isa = PBXGroup;
 			children = (
 				90459F952DE24C2A0045BAB9 /* CoderSchool working towards congrsional app challenge */,
-				27D3660E2EAFD02B001CD6FA /* DAM */,
-				27D365F32EAFCE41001CD6FA /* Frameworks */,
 				90459F942DE24C2A0045BAB9 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -146,7 +59,6 @@
 			isa = PBXGroup;
 			children = (
 				90459F932DE24C2A0045BAB9 /* CoderSchool working towards congrsional app challenge.app */,
-				27D3660C2EAFD02B001CD6FA /* DAM.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -154,11 +66,6 @@
 		90459F952DE24C2A0045BAB9 /* CoderSchool working towards congrsional app challenge */ = {
 			isa = PBXGroup;
 			children = (
-				27D365A02EAC582A001CD6FA /* CustomCalenderView.swift */,
-				27D365A22EAC582A001CD6FA /* GoalTracker.swift */,
-				27D365A32EAC582A001CD6FA /* LoginViewModel.swift */,
-				27D365A42EAC582A001CD6FA /* OnboardingViewModel.swift */,
-				27D365A52EAC582A001CD6FA /* UserModel.swift */,
 				AAD60A4A2E62664800940EF7 /* CoderSchool working towards congrsional app challenge.entitlements */,
 				90459F962DE24C2A0045BAB9 /* CoderSchool_working_towards_congrsional_app_challengeApp.swift */,
 				27517DB32E95BDF70063DE12 /* ContentView.swift */,
@@ -166,9 +73,6 @@
 				903CADBE2E679AF9001D63A6 /* MainAppView.swift */,
 				903CADBD2E679AF9001D63A6 /* StatsView.swift */,
 				90459F982DE24C2A0045BAB9 /* SettingsView.swift */,
-				27D365872EAC261F001CD6FA /* RestrictedAppsView.swift */,
-				27D365882EAC261F001CD6FA /* ValidateRestrictedAppView.swift */,
-				27D365842EAC25FA001CD6FA /* Models */,
 				AAD60A482E5F6B9E00940EF7 /* Reccomendations.swift */,
 				90459F9A2DE24C2B0045BAB9 /* Assets.xcassets */,
 				905579222DE7C75B00068FAE /* NavigationTabs.swift */,
@@ -189,28 +93,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		27D3660B2EAFD02B001CD6FA /* DAM */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 27D366172EAFD02B001CD6FA /* Build configuration list for PBXNativeTarget "DAM" */;
-			buildPhases = (
-				27D366082EAFD02B001CD6FA /* Sources */,
-				27D366092EAFD02B001CD6FA /* Frameworks */,
-				27D3660A2EAFD02B001CD6FA /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				27D3660E2EAFD02B001CD6FA /* DAM */,
-			);
-			name = DAM;
-			packageProductDependencies = (
-			);
-			productName = DAM;
-			productReference = 27D3660C2EAFD02B001CD6FA /* DAM.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
 		90459F922DE24C2A0045BAB9 /* CoderSchool working towards congrsional app challenge */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 90459FA12DE24C2B0045BAB9 /* Build configuration list for PBXNativeTarget "CoderSchool working towards congrsional app challenge" */;
@@ -218,12 +100,10 @@
 				90459F8F2DE24C2A0045BAB9 /* Sources */,
 				90459F902DE24C2A0045BAB9 /* Frameworks */,
 				90459F912DE24C2A0045BAB9 /* Resources */,
-				27D366022EAFCE41001CD6FA /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				27D366142EAFD02B001CD6FA /* PBXTargetDependency */,
 			);
 			name = "CoderSchool working towards congrsional app challenge";
 			productName = "CoderSchool working towards congrsional app challenge";
@@ -237,12 +117,9 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2600;
+				LastSwiftUpdateCheck = 1530;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
-					27D3660B2EAFD02B001CD6FA = {
-						CreatedOnToolsVersion = 26.0.1;
-					};
 					90459F922DE24C2A0045BAB9 = {
 						CreatedOnToolsVersion = 15.3;
 					};
@@ -262,19 +139,11 @@
 			projectRoot = "";
 			targets = (
 				90459F922DE24C2A0045BAB9 /* CoderSchool working towards congrsional app challenge */,
-				27D3660B2EAFD02B001CD6FA /* DAM */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		27D3660A2EAFD02B001CD6FA /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		90459F912DE24C2A0045BAB9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -287,28 +156,12 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		27D366082EAFD02B001CD6FA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		90459F8F2DE24C2A0045BAB9 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27D365852EAC25FB001CD6FA /* CustomApp.swift in Sources */,
-				27D365A62EAC582A001CD6FA /* OnboardingViewModel.swift in Sources */,
-				27D365A82EAC582A001CD6FA /* GoalTracker.swift in Sources */,
-				27D365A92EAC582A001CD6FA /* LoginViewModel.swift in Sources */,
-				27D365AA2EAC582A001CD6FA /* UserModel.swift in Sources */,
-				27D365AB2EAC582A001CD6FA /* CustomCalenderView.swift in Sources */,
-				27D365862EAC25FB001CD6FA /* RestrictedApp.swift in Sources */,
 				90459F992DE24C2A0045BAB9 /* SettingsView.swift in Sources */,
 				27DDFE622E9A917B00A3CFC2 /* GoalsPage.swift in Sources */,
-				27D365892EAC261F001CD6FA /* ValidateRestrictedAppView.swift in Sources */,
-				27D3658A2EAC261F001CD6FA /* RestrictedAppsView.swift in Sources */,
 				903CADC22E679AF9001D63A6 /* MainAppView.swift in Sources */,
 				903CADC12E679AF9001D63A6 /* StatsView.swift in Sources */,
 				90459F972DE24C2A0045BAB9 /* CoderSchool_working_towards_congrsional_app_challengeApp.swift in Sources */,
@@ -321,73 +174,7 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		27D366142EAFD02B001CD6FA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 27D3660B2EAFD02B001CD6FA /* DAM */;
-			targetProxy = 27D366132EAFD02B001CD6FA /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
-		27D366182EAFD02B001CD6FA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = DAM/DAM.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = DAM/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = DAM;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.tcsm.orangeteamproject.DAM;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		27D366192EAFD02B001CD6FA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = DAM/DAM.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = DAM/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = DAM;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.tcsm.orangeteamproject.DAM;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
 		90459F9F2DE24C2B0045BAB9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -572,15 +359,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		27D366172EAFD02B001CD6FA /* Build configuration list for PBXNativeTarget "DAM" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				27D366182EAFD02B001CD6FA /* Debug */,
-				27D366192EAFD02B001CD6FA /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		90459F8E2DE24C2A0045BAB9 /* Build configuration list for PBXProject "CoderSchool working towards congrsional app challenge" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

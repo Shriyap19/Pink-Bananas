@@ -7,7 +7,7 @@
 
 import SwiftUI
 import UIKit
-
+import FamilyControls
 import ManagedSettings
 import Foundation
 import Combine
@@ -19,6 +19,55 @@ extension UIApplication {
     }
 } // used to dismiss keyboird after done typgin
 
+final class FamilyControlsManager: ObservableObject { //observabel object lets swift change view automatilcy when updated
+    @Published var authorized: Bool = false //authoried var checls if app has permisions or not
+    @Published var selection = FamilyActivitySelection() //var that actually stores the selected apps, binding allowes for picker to be updated live
+    
+    private static let savedSelectionKey = "SavedFamilyActivitySelection" //key used to save/selction in userdefaults
+
+    init() {
+        // Load saved selection of apps on launch
+        loadSelection()
+    }
+
+    func requestAuthorization() { //authorization for familycontrols
+        Task {
+            do {
+                try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
+                await MainActor.run {
+                    self.authorized = true
+                    print("Family Controls authorized")
+                }
+            } catch {
+                await MainActor.run {
+                    self.authorized = false
+                    print("Family Controls authorization failed:", error.localizedDescription)
+                }
+            }
+        }
+    }
+
+    func saveSelection() { // turnes apps selcted into code so can save and stores it in userdefaults
+        do {
+            let data = try PropertyListEncoder().encode(selection)
+            UserDefaults.standard.set(data, forKey: Self.savedSelectionKey)
+        } catch {
+            print("Failed to save FamilyActivitySelection:", error)
+        }
+    }
+
+    private func loadSelection() { // takes the saved from UserDefaults then decodes it so it can be displayed to user
+        guard let data = UserDefaults.standard.data(forKey: Self.savedSelectionKey) else { return }
+        do {
+            let saved = try PropertyListDecoder().decode(FamilyActivitySelection.self, from: data)
+            selection = saved
+        } catch {
+            print("Failed to load FamilyActivitySelection:", error)
+        }
+    }
+}
+
+
 
 
 enum OnboardingStep: Int, CaseIterable, Identifiable {
@@ -26,8 +75,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
     case features
     case statisticfeatures
     case goalfeatures
-
-//    case restrictedApps
+    case restrictedApps
     case birthday
     case name
     case email
@@ -39,42 +87,43 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
     var id: Int { rawValue }
 }
 
-struct AppItem: Identifiable, Hashable, Codable {
+struct AppItem: Identifiable, Hashable {
     var id: String { name }  // Use name as unique ID
     let name: String
     let iconName: String
 }
 
 struct Onboarding {
-    var restrictedApps: [AppItem] = []
+    var restrictedApps = RestrictedApps()
     var birthday = Birthday()
-    var username: String = ""
-    var name: String = ""
-    var password: String = ""
-    var email: String = ""
-    var firstsurvey: [String: String] = [:]
+    var username = Username()
+    var name = Name()
+    var password = Password()
+    var email = Email()
+    var firstsurvey = FirstSurvey()
 
-//    struct RestrictedApps {
-//        var selectedApps: [AppItem] = []
-//    }
+    struct RestrictedApps {
+        var selectedApps: [AppItem] = []
+    }
+
     struct Birthday {
         var value = Date()
     }
-//    struct Username {
-//        var name: String = ""
-//    }
-//    struct Name {
-//        var name2: String = ""
-//    }
-//    struct Password {
-//        var password: String = ""
-//    }
-//    struct Email {
-//        var email: String = ""
-//    }
-//    struct FirstSurvey {
-//        var firstsurveyanswers: [String: String] = [:]
-//    }
+    struct Username {
+        var name: String = ""
+    }
+    struct Name {
+        var name2: String = ""
+    }
+    struct Password {
+        var password: String = ""
+    }
+    struct Email {
+        var email: String = ""
+    }
+    struct FirstSurvey {
+        var firstsurveyanswers: [String: String] = [:]
+    }
 }
 
 
@@ -86,7 +135,7 @@ struct FeatureScreen: View {
         VStack {
             Image("Calender").resizable()
                 .scaledToFit()
-                .frame(width: 250, height: 250).cornerRadius(20)
+                .frame(width: 250, height: 250)
                 .padding()
                 .background(Color.white.opacity(0.2))
                 .cornerRadius(20)
@@ -161,12 +210,12 @@ struct ReviewScreen: View {
                 Text("Birthday: \(onboarding.birthday.value, style: .date)")
                     .font(.headline)
                     .foregroundColor(.white)
-                Text("Name: \(onboarding.name)").font(.headline)
+                Text("Name: \(onboarding.name.name2)").font(.headline)
                     .foregroundColor(.white)
-                Text("Username: \(onboarding.username)")
+                Text("Username: \(onboarding.username.name)")
                     .font(.headline)
                     .foregroundColor(.white)
-                Text("Email: \(onboarding.email)")
+                Text("Email: \(onboarding.email.email)")
                     .font(.headline)
                     .foregroundColor(.white)
 
@@ -175,7 +224,7 @@ struct ReviewScreen: View {
                         .font(.headline)
                         .foregroundColor(.white)
 
-                    Text(showPassword ? onboarding.password: String(repeating: "•", count: onboarding.password.count))
+                    Text(showPassword ? onboarding.password.password : String(repeating: "•", count: onboarding.password.password.count))
                         .foregroundColor(.white.opacity(0.9))
 
                     Button(action: { showPassword.toggle() }) {
@@ -187,10 +236,10 @@ struct ReviewScreen: View {
                 ScrollView {
                     Text("Survey Answers:").font(.headline)
                         .foregroundColor(.white)
-                    if !onboarding.firstsurvey.isEmpty {
+                    if !onboarding.firstsurvey.firstsurveyanswers.isEmpty {
                         Divider().background(.white)
                         VStack(alignment: .leading, spacing: 12) {
-                            ForEach(onboarding.firstsurvey.sorted(by: { $0.key < $1.key }), id: \.key) { question, answer in
+                            ForEach(onboarding.firstsurvey.firstsurveyanswers.sorted(by: { $0.key < $1.key }), id: \.key) { question, answer in
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(question)
                                         .font(.subheadline)
@@ -215,6 +264,71 @@ struct ReviewScreen: View {
     }
 }
 
+
+struct RestrictedAppsView: View {
+    @Binding var restrictedApps: Onboarding.RestrictedApps
+    @EnvironmentObject var familyManager: FamilyControlsManager // controls familyPicker
+    @Binding var showFamilyPicker: Bool // controls is family picer, restoricted apps popus shows or not
+    
+
+    var body: some View {
+        VStack(alignment: .center, spacing: 30) {
+            Spacer()
+
+          
+            Text("Select Restricted Apps:")
+                .bold()
+                .font(.title)
+                .foregroundColor(.white)
+                .multilineTextAlignment(.center)
+
+            Text("Choose what apps you want restrictions to be applied to")
+                .font(.body)
+                .foregroundColor(.white)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+
+            // Button to open FamilyActivityPicker
+            Button(action: {
+                if !familyManager.authorized {
+                    familyManager.requestAuthorization()
+                }
+                showFamilyPicker = true
+            }) {
+                HStack {
+                    Image(systemName: "square.stack")
+                    Text("Choose from device")
+                }
+                .padding(.vertical, 12)
+                .padding(.horizontal, 24)
+                .background(Color.white)
+                .foregroundColor(.cyan)
+                .cornerRadius(12)
+            }
+
+            Spacer()
+        }
+        .padding()
+        .sheet(isPresented: $showFamilyPicker) { //shows the pop up
+            FamilyActivityPicker(selection: $familyManager.selection) // apple privde the pop up display and the selection thin js tracks the change when u select
+                .presentationDetents([.medium, .large]) //adjust size
+                .onDisappear { // called when thing is closed
+                    // Save selection whenever picker closes
+                    familyManager.saveSelection()
+                    // Update your onboarding restricted apps if needed
+                    restrictedApps.selectedApps = familyManager.selection.applications.map {
+                        AppItem(name: $0.bundleIdentifier ?? "Unknown", iconName: $0.bundleIdentifier ?? "")
+                    }
+                    print("Picker dismissed. Restricted apps:", restrictedApps.selectedApps)
+                }
+        }
+        .onChange(of: familyManager.selection) {  // runs everytime the actuall varible saving the thing everytime the selection var changes
+            familyManager.saveSelection()
+        }
+
+        .background(Color.cyan.ignoresSafeArea())
+    }
+}
 
 
 
@@ -266,7 +380,7 @@ struct BirthdayView: View {
 }
 
 struct UsernameView: View {
-    @Binding var username: String
+    @Binding var username: Onboarding.Username
 
     var body: some View {
         VStack(spacing: 24) {
@@ -285,7 +399,7 @@ struct UsernameView: View {
                 .font(.system(size: 28, weight: .bold))
                 .foregroundColor(.white)
 
-            TextField("Username", text: $username).foregroundColor(.cyan)
+            TextField("Username", text: $username.name).foregroundColor(.cyan)
                 .textFieldStyle(.plain)
                 .padding()
                 .background(Color.white)
@@ -301,7 +415,7 @@ struct UsernameView: View {
 }
 
 struct EmailView: View {
-    @Binding var email: String
+    @Binding var email: Onboarding.Email
 
     var body: some View {
         VStack(spacing: 24) {
@@ -321,7 +435,7 @@ struct EmailView: View {
                 .font(.system(size: 28, weight: .bold))
                 .foregroundColor(.white)
 
-            TextField("Email", text: $email)
+            TextField("Email", text: $email.email)
                 .keyboardType(.emailAddress)
                 .autocapitalization(.none)
                 .disableAutocorrection(true)
@@ -341,7 +455,7 @@ struct EmailView: View {
 }
 
 struct NameView: View {
-    @Binding var name: String
+    @Binding var name: Onboarding.Name
 
     var body: some View {
         VStack(spacing: 24) {
@@ -360,7 +474,7 @@ struct NameView: View {
                 .font(.system(size: 28, weight: .bold))
                 .foregroundColor(.white)
 
-            TextField("Name", text: $name)
+            TextField("Name", text: $name.name2)
                 .foregroundColor(.cyan)
                 .textFieldStyle(.plain)
                 .padding()
@@ -378,7 +492,7 @@ struct NameView: View {
 
 struct PasswordView: View {
     @State private var showPassword = false
-    @Binding var password: String
+    @Binding var password: Onboarding.Password
 
     var body: some View {
         VStack(spacing: 24) {
@@ -398,7 +512,7 @@ struct PasswordView: View {
                 .foregroundColor(.white)
 
             if showPassword {
-                TextField("Password", text: $password).foregroundColor(.cyan)
+                TextField("Password", text: $password.password).foregroundColor(.cyan)
                     .textFieldStyle(.plain)
                     .padding()
                     .background(Color.white)
@@ -406,7 +520,7 @@ struct PasswordView: View {
                     .padding(.horizontal)
                     .font(.title2)
             } else {
-                SecureField("Password", text: $password).foregroundColor(.cyan)
+                SecureField("Password", text: $password.password).foregroundColor(.cyan)
                     .textFieldStyle(.plain)
                     .padding()
                     .background(Color.white)
@@ -428,7 +542,7 @@ struct PasswordView: View {
 }
 
 struct FirstSurveyView: View {
-    @Binding var firstsurvey: [String: String]
+    @Binding var firstsurvey: Onboarding.FirstSurvey
 
     let questions: [String: [String]] = [
         "What do you hope to accomplish by reducing screen time?": ["Learn a new skill", "Get Outside", "Exercise", "Study", "Socialize", "Just Stay Off the Phone", "Other"],
@@ -460,7 +574,7 @@ struct FirstSurveyView: View {
                             LazyVGrid(columns: columns, spacing: 10) {
                                 ForEach(questions[question]!, id: \.self) { answer in
                                     Button(action: {
-                                        firstsurvey[question] = answer
+                                        firstsurvey.firstsurveyanswers[question] = answer
                                     }) {
                                         Text(answer)
                                             .font(.subheadline)
@@ -468,7 +582,7 @@ struct FirstSurveyView: View {
                                             .padding(8)
                                             .frame(maxWidth: .infinity)
                                             .background(
-                                                firstsurvey[question] == answer
+                                                firstsurvey.firstsurveyanswers[question] == answer
                                                 ? Color.cyan
                                                 : Color.white.opacity(0.2)
                                             )
@@ -532,6 +646,7 @@ struct WelcomeScreen: View {
 
 struct ContentView: View {
     @AppStorage("hasCompletedOnboarding") var hasCompletedOnboarding = false
+    @EnvironmentObject var familyManager: FamilyControlsManager // swithced to this instead private so it can also be used in statsview and its all the same
     @State private var onboarding = Onboarding()
     @State private var currentStepIndex = 0
     @State private var isLoggingIn = false
@@ -568,12 +683,8 @@ struct ContentView: View {
                 if currentStepIndex < steps.count - 1 {
                     withAnimation { currentStepIndex += 1 }
                 } else {
-                    let new_user = User(selectedApps: onboarding.restrictedApps, username: onboarding.username, name: onboarding.name, password: onboarding.password, email: onboarding.email, firstsurveyanswers: onboarding.firstsurvey)
-                    register_user(user: new_user)
                     hasCompletedOnboarding = true
                 }
-                
-                
             } label: {
                 Text(currentStepIndex == steps.count - 1 ? "Get started" : "Next")
                     .font(.headline)
@@ -598,6 +709,10 @@ struct ContentView: View {
     @ViewBuilder
     private func stepView(for step: OnboardingStep) -> some View {
         switch step {
+        case .restrictedApps:
+            RestrictedAppsView(
+                restrictedApps: $onboarding.restrictedApps,
+                showFamilyPicker: $showFamilyPickerFromRestricted).environmentObject(familyManager)
         case .birthday:
             BirthdayView(birthday: $onboarding.birthday)
         case .username:
@@ -625,5 +740,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView().environmentObject(FamilyControlsManager())
 }

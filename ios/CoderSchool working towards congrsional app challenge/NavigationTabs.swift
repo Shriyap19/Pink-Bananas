@@ -9,9 +9,8 @@ import SwiftUI
 
 struct NavigationTabs: View {
     var body: some View {
-
         TabView {
-            CustomCalenderView().tabItem { Image(systemName: "house")
+            MainAppView().tabItem { Image(systemName: "house")
                 Text("Home")
         }
             GoalsPageView().tabItem { Image(systemName: "star")
@@ -20,7 +19,7 @@ struct NavigationTabs: View {
             StatsView().tabItem { Image(systemName: "chart.pie")
                 Text("Statistics")
         }
-            Reccomendations().tabItem { Image(systemName: "checkmark.circle.fill")
+            ReccomendationsView().tabItem { Image(systemName: "checkmark.circle.fill")
                 Text("Recommendation")
         }
             SettingsView().tabItem { Image(systemName: "gear")
@@ -28,7 +27,11 @@ struct NavigationTabs: View {
         }
 
 
-        }.accentColor(.white)
+            
+        
+
+
+        }
     }
 }
 

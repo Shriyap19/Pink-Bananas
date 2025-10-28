@@ -22,8 +22,7 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
         // Handle the start of the interval.
         os_log("interval started 2", log:logger)
         
-        UserDefaults(suiteName: "group.com.tcsm.orangeteamproject")?.set("Interval started", forKey:"shouldShowAlert")
-        
+        UserDefaults(suiteName: "group.com.tcsm.orangeteamproject")?.removeObject(forKey: "goal_\(activity.rawValue)")
     }
     
     override func intervalDidEnd(for activity: DeviceActivityName) {
@@ -32,13 +31,16 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
         // Handle the end of the interval.
         // Handle the start of the interval.
         os_log("interval ended", log:logger)
-        UserDefaults(suiteName: "group.com.tcsm.orangeteamproject")?.set("Interval ended", forKey:"shouldShowAlert")
+        let wasFullfilled = UserDefaults(suiteName: "group.com.tcsm.orangeteamproject")?.bool(forKey: "goal_\(activity.rawValue)")
+        if wasFullfilled == nil {
+            UserDefaults(suiteName: "group.com.tcsm.orangeteamproject")?.set(true, forKey:"goal_\(activity.rawValue)")
+        }
     }
     
     override func eventDidReachThreshold(_ event: DeviceActivityEvent.Name, activity: DeviceActivityName) {
         super.eventDidReachThreshold(event, activity: activity)
         
-        UserDefaults(suiteName: "group.com.tcsm.orangeteamproject")?.set("Threshold reached!",forKey:"shouldShowAlert")
+        UserDefaults(suiteName: "group.com.tcsm.orangeteamproject")?.set(false,forKey:"goal_\(activity.rawValue)")
         // Handle the event reaching its threshold.
         // Handle the start of the interval.
         os_log("event reached its threshold", log:logger)
@@ -63,7 +65,8 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
     override func eventWillReachThresholdWarning(_ event: DeviceActivityEvent.Name, activity: DeviceActivityName) {
         super.eventWillReachThresholdWarning(event, activity: activity)
         
-        UserDefaults(suiteName: "group.com.tcsm.orangeteamproject")?.set("event will reach threshold",forKey:"shouldShowAlert")
+        UserDefaults(suiteName: "group.com.tcsm.orangeteamproject")?.set(true,forKey:"show_alert_for_\(activity.rawValue)")
+        
         // Handle the warning before the event reaches its threshold.
         os_log("event will reach threshold", log:logger)
     }

@@ -75,8 +75,9 @@ Button(action:{
                 restrictedApp.name = appName
                 restrictedApp.threshold = hours
                 restrictedApp.tokens = selection.applicationTokens
+    restrictedApp.category = selectedCategory
                 manager.restrictedApps.append(restrictedApp)
-                restrictedApp = RestrictedApp(name: "",customApp:CustomApp(id: "", name: "", appIcon: ""),threshold: 0)
+    restrictedApp = RestrictedApp(name: "",customApp:CustomApp(id: "", name: "", appIcon: ""),threshold: 0,category:"Other")
                 path.removeLast(path.count)
             }){
                 Text("Submit").font(.headline).padding().foregroundStyle(.cyan).background(.white).clipShape(RoundedRectangle(cornerRadius: 10))

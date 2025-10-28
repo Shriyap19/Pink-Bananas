@@ -132,11 +132,8 @@ class ScreenTimeManager: ObservableObject {
     
     private static let savedSelectionKey = "SavedFamilyActivitySelection" //key used to save/selction in userdefaults
     
-    let schedule = DeviceActivitySchedule(intervalStart: DateComponents(hour:0, minute:0),
-                                          intervalEnd: DateComponents(hour:23, minute:59),
-                                          repeats: true,
-                                          warningTime:DateComponents(minute:1))
-    let activityName = DeviceActivityName("Pinterest Watcher")
+    
+    @Published var goalStatuses: [String: Bool] = [:]
     
     @Published var restrictedApps: [RestrictedApp] = [] {
         didSet{
@@ -153,6 +150,21 @@ class ScreenTimeManager: ObservableObject {
         }
         //loadSelection()
     }
+    
+    func refreshGoalStatuses() {
+            guard let defaults = UserDefaults(suiteName: "group.com.tcsm.orangeteamproject") else { return }
+            var updated: [String: Bool] = [:]
+
+            for (key, value) in defaults.dictionaryRepresentation() {
+                if key.hasPrefix("goal_"), let fulfilled = value as? Bool {
+                    updated[key.replacingOccurrences(of: "goal_", with: "")] = fulfilled
+                }
+            }
+
+            DispatchQueue.main.async {
+                self.goalStatuses = updated
+            }
+        }
 
     func requestAuthorization() async {
         do {
@@ -215,22 +227,52 @@ class ScreenTimeManager: ObservableObject {
 //        }
 //    }
     
-    func startMonitoring(){
-        let pinterestEvent = DeviceActivityEvent(applications:selection.applicationTokens, threshold:DateComponents(minute:2))
-        let pinterestEventName = DeviceActivityEvent.Name("Pinterest")
+    func startMonitoring(app:RestrictedApp, goalLimit: Float)-> Bool{
+        
+        let warning = (Float(app.threshold) - goalLimit) - 0.25
+        print(warning)
+        if warning < 0 && app.threshold != 0 {
+            return false
+        }
+        let warningMinutes = max(Int(warning * 60), 0)
+        let threshold = (Float(app.threshold) - goalLimit)
+
+        
+        let activityName = DeviceActivityName("\(app.name)")
+        let schedule = DeviceActivitySchedule(intervalStart: DateComponents(hour:0, minute:0),
+                                              intervalEnd: DateComponents(hour:23, minute:59),
+                                              repeats: true,
+                                              warningTime:DateComponents(minute:warningMinutes))
+        guard let tokens = app.tokens, !tokens.isEmpty else{
+            return false
+        }
+        
+        // Use the unwrapped constant
+        let event = DeviceActivityEvent(applications:tokens, threshold:DateComponents(minute:Int(threshold * 60)))
+        let eventName = DeviceActivityEvent.Name("\(app.name)")
         do{
             print("Attempting to start monitoring")
-            print(selection.applications)
-            try DAMcenter.startMonitoring(activityName, during: schedule, events: [pinterestEventName: pinterestEvent])
-            
+            print(warningMinutes)
+            print(goalLimit)
+            print(threshold)
+            print(app.threshold)
+            try DAMcenter.startMonitoring(activityName, during: schedule, events: [eventName: event])
+            print("Successfully starte monitoring")
+            return true
         }catch{
             print("Error starting monitoring: \(error)")
+            return false
         }
     }
     
-    func stopMonitoring(){
+    func stopMonitoring(appName:String){
         print("Stopping the monitoring")
+        let activityName = DeviceActivityName(appName)
        DAMcenter.stopMonitoring([activityName])
+    }
+    func stopAllMonitoring(){
+        print("Stopping all monitoring")
+        DAMcenter.stopMonitoring()
     }
     
     func requestNotificationPermission() {
@@ -453,7 +495,7 @@ struct SettingsView: View {
     @State private var path = NavigationPath()
     let routes = NavigationDestinations.allCases
     @State var itunesSelection: CustomApp?
-    @State var restrictedApp:RestrictedApp = RestrictedApp(name: "",customApp:CustomApp(id: "", name: "", appIcon: ""),threshold: 0)
+    @State var restrictedApp:RestrictedApp = RestrictedApp(name: "",customApp:CustomApp(id: "", name: "", appIcon: ""),threshold: 0,category:"Other")
 
     private func handleLogout() {
         isLoggedIn = false

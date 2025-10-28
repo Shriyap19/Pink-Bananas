@@ -16,8 +16,11 @@ struct RestrictedApp: Identifiable, Codable, Hashable{
     var tokens: Set<ApplicationToken>?
     var threshold: Int
     var id: String {name}
-//    let schedule: DeviceActivitySchedule
-//    let activityName: DeviceActivityName
+    var goalItem: GoalItem?
+    var todayFullfilled: Bool = true
+    var currentStreak:Int = 0
+    var daysCompleted:Int = 0
+    var category: String
     //let completed: Bool
     //let streak: Int
 }

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.http.HttpStatus;
 
 import com.pinkbananas.backend.app.model.User;
 import com.pinkbananas.backend.app.repository.UserRepository;
@@ -43,7 +42,7 @@ public class UserController {
         userRepository.deleteById(id);
     }
 
-    @PostMapping
+    @PostMapping ("/{login}")
     public ResponseEntity<User> login(@RequestBody String username, String password) {
         User correctUser = userRepository.findByUsername(username);
         if (correctUser.getPassword() == password) {
@@ -54,4 +53,3 @@ public class UserController {
         }
     }             
 }
-

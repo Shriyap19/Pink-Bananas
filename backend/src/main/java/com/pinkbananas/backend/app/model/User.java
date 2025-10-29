@@ -8,29 +8,36 @@ public class User {
     private String username;
     private String password;
     private String name;
-    private int age;
-    private int streak;
+    private String birthday;
+    private String email;
+    private int dailyStreak;
     private String goals;
+    private String weeklyStreak;
 
     public User() {
         //no argument constructor :)
     }
 
-    public User(String username, String password, String name, String goals, int age, int streak) {
+    public User(String username, String password, String name, String goals, String weeklyStreak, String birthday, String email, int dailyStreak) {
         this.username = username;
         this.password = password;
         this.name = name;
-        this.age = age;
-        this.streak = streak;
+        this.birthday = birthday;
+        this.email = email;
+        this.dailyStreak = dailyStreak;
         this.goals = goals;
+        this.weeklyStreak = weeklyStreak;
+
     }
     
-    public User(String username, String password, String name, String goals, int streak) {
+    public User(String username, String password, String name, String goals, String weeklyStreak, String email, int dailyStreak) {
         this.username = username;
         this.password = password;
         this.name = name;
-        this.streak = streak;
+        this.email = email;
+        this.dailyStreak = dailyStreak;
         this.goals = goals;
+        this.weeklyStreak = weeklyStreak;
     }
 
      public String getUsername() {return username;}
@@ -42,14 +49,20 @@ public class User {
      public String getName() {return name;}
      public void setName(String name) {this.name = name;}
 
-     public int getAge() {return age;}
-     public void setAge(int age) {this.age = age;}
+     public String getbirthday() {return birthday;}
+     public void setbirthday(String birthday) {this.birthday = birthday;}
 
-     public int getStreak() {return streak;}
-     public void setStreak(int streak) {this.streak = streak;}
+     public int getdailyStreak() {return dailyStreak;}
+     public void setdailyStreak(int dailyStreak) {this.dailyStreak = dailyStreak;}
 
-     public String getGoals() {return goals;}
-     public void setGoals(String goals) {this.goals = goals;}
+     public String getgoals() {return goals;}
+     public void setgoals(String goals) {this.goals = goals;}
+
+     public String getweeklyStreak() {return weeklyStreak;}
+     public void setweeklyStreak(String weeklyStreak) {this.weeklyStreak = weeklyStreak;}
+
+     public String getEmail() {return email;}
+     public void setEmail(String email) {this.email = email;}
 
      @Override
      public String toString() {

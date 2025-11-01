@@ -1,3 +1,61 @@
+# Xcode
+.DS_Store
+build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xcworkspacedata
+
+# Swift Package Manager
+.swiftpm/
+.build/
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# Archives
+*.xcarchive
+
+# App Data
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Playground
+timeline.xctimeline
+playground.xcworkspace
+
+# Xcode Automatically Generated
+*.moved-aside
+*.xccheckout
+
+# User-specific
+*.orig
+*.swp
+*.swo
+.idea/
+*.hmap
+
+# Xcode Cloud
+ci_post_clone.sh
+ci_pre_xcodebuild.sh
+ci_post_xcodebuild.sh
+
+# Firebase
+Google
+
+
 # Compiled class file
 *.class
 

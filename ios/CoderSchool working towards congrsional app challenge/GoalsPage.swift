@@ -13,6 +13,7 @@ struct GoalItem: Identifiable, Codable, Equatable, Hashable {
     var completedDays: Set<Int> = []
     var status: GoalStatus = .notChecked
     var currentDay:Int = 0
+    var timeBeingSaved: Int = 0
     
     init(id: UUID = UUID(), appName: String, limit: String, completedDays: Set<Int> = [], status: GoalStatus = .notChecked) {
         self.id = id
@@ -33,7 +34,7 @@ struct Feedback: Codable {
 }
 
 struct GoalsPageView: View {
-
+    
     @AppStorage("allGoalsData") private var allGoalsData: Data = Data()
 
     @EnvironmentObject var tracker: GoalTracker
@@ -57,7 +58,62 @@ struct GoalsPageView: View {
             allGoalsData = encoded
         }
     }
-
+    
+    // Check if a goal was failed and remove that day from the completedDays list
+    func pullGoalStatus(){
+        guard let defaults = UserDefaults(suiteName:"group.com.tcsm.orangeteamproject") else {return}
+        
+        print("Pulling goal statuses")
+        for i in allGoals.indices{
+            //Each restricted app has a UserDefault save with the pattern goal_appName
+            let key = "goal_\(allGoals[i].appName)"
+            
+            //Make sure the userDefault exists
+            guard let status = defaults.object(forKey: key) as? Bool else {continue}
+            
+            guard let restrictedAppIndex: Int = manager.restrictedApps.firstIndex(where: {$0.name == allGoals[i].appName}) else{
+                return
+            }
+            
+            //HomePage tracker date
+            let date = Calendar.current.date(byAdding: .day, value: allGoals[i].currentDay, to: Date())!
+          
+            if status == false{
+                print("status failed")
+                if allGoals[i].completedDays.contains(allGoals[i].currentDay) {
+                    allGoals[i].completedDays.remove(allGoals[i].currentDay)
+                    tracker.streakDays[date] = false // Remove from calendar streak
+                }
+            }else{
+                manager.restrictedApps[restrictedAppIndex].timeSaved.insert(Day(time: allGoals[i].timeBeingSaved), at: 0)
+                print(manager.restrictedApps[restrictedAppIndex])
+                print("status achieved")
+                if !allGoals[i].completedDays.contains(allGoals[i].currentDay) {
+                    allGoals[i].completedDays.insert(allGoals[i].currentDay)
+                    tracker.streakDays[date] = true // Mark as completed in calendar
+                }
+            }
+        }
+        saveGoals()
+    }
+    
+    func checkDayStatus(){
+        print("Pulling day statuses")
+        guard let defaults = UserDefaults(suiteName: "group.com.tcsm.orangeteamproject") else {return}
+        
+        for i in allGoals.indices{
+            let key = "dayChange_\(allGoals[i].appName)"
+            
+            guard let dayChanged = defaults.object(forKey: key) as? Bool else {continue}
+            
+            if dayChanged == true {
+                allGoals[i].currentDay += 1
+                defaults.set(false, forKey:key)
+            }
+        }
+        saveGoals()
+    }
+    
     func parseLimit(_ limit: String) -> Float {
         if limit.contains("15 mins") { return 0.25 }
         if limit.contains("30 mins") { return 0.5 }
@@ -138,8 +194,8 @@ struct GoalsPageView: View {
                                     return
                                 }
                                 
-                                let newGoal = GoalItem(appName:app.name, limit: selectedLimit)
-                                
+                                var newGoal = GoalItem(appName:app.name, limit: selectedLimit)
+                                newGoal.timeBeingSaved = max(Int(parseLimit(selectedLimit) * 60), 0) //Time being saved per day for this goal in minutes
                                 if (selectedApp != nil){
                                     let monitoring = manager.startMonitoring(app:app, goalLimit:parseLimit(selectedLimit))
                                     if monitoring {
@@ -218,23 +274,9 @@ struct GoalsPageView: View {
         }
         .onAppear {
             loadGoals()
+            pullGoalStatus()
+            checkDayStatus()
         }
-        .onReceive(manager.$goalStatuses, perform: {statuses in
-            var changed = false
-            for i in allGoals.indices {
-                let appName = allGoals[i].appName
-                if let fulfilled = statuses[appName] {
-                    let newStatus: GoalStatus = fulfilled ? .achieved : .failed
-                    if allGoals[i].status != newStatus {
-                        allGoals[i].status = newStatus
-                        changed = true
-                    }
-                }
-            }
-            if changed {
-                saveGoals()
-            }
-        })
     }
     
     struct GoalRowView: View {
@@ -281,7 +323,6 @@ struct GoalsPageView: View {
                     .background(Color.red.opacity(0.7))
                     .foregroundColor(.white)
                     .cornerRadius(14)
-                    .task{print(goal.completedDays)}
                 }
                 
                 HStack(spacing: 12) {
@@ -290,12 +331,19 @@ struct GoalsPageView: View {
                             .fill(goal.completedDays.contains(i) ? .cyan : .cyan.opacity(0.3))
                             .frame(width: 28, height: 28)
                             .onTapGesture {
+                                guard let restrictedAppIndex: Int = manager.restrictedApps.firstIndex(where: {$0.name == goal.appName}) else{
+                                    return
+                                }
+
                                 let date = Calendar.current.date(byAdding: .day, value: -i, to: Date())!
                                 
                                 if goal.completedDays.contains(i) {
                                     goal.completedDays.remove(i)
                                     tracker.streakDays[date] = false // Remove from calendar streak
+                                    
                                 } else {
+                                    manager.restrictedApps[restrictedAppIndex].timeSaved.insert(Day(time: goal.timeBeingSaved), at: 0)
+                                    print(manager.restrictedApps[restrictedAppIndex])
                                     goal.completedDays.insert(i)
                                     tracker.streakDays[date] = true // Mark as completed in calendar
                                 }

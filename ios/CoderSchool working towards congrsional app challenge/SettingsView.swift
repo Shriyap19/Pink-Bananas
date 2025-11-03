@@ -132,9 +132,6 @@ class ScreenTimeManager: ObservableObject {
     
     private static let savedSelectionKey = "SavedFamilyActivitySelection" //key used to save/selction in userdefaults
     
-    
-    @Published var goalStatuses: [String: Bool] = [:]
-    
     @Published var restrictedApps: [RestrictedApp] = [] {
         didSet{
             saveRestrictedApps()
@@ -150,22 +147,8 @@ class ScreenTimeManager: ObservableObject {
         }
         //loadSelection()
     }
-    
-    func refreshGoalStatuses() {
-            guard let defaults = UserDefaults(suiteName: "group.com.tcsm.orangeteamproject") else { return }
-            var updated: [String: Bool] = [:]
 
-            for (key, value) in defaults.dictionaryRepresentation() {
-                if key.hasPrefix("goal_"), let fulfilled = value as? Bool {
-                    updated[key.replacingOccurrences(of: "goal_", with: "")] = fulfilled
-                }
-            }
-
-            DispatchQueue.main.async {
-                self.goalStatuses = updated
-            }
-        }
-
+   
     func requestAuthorization() async {
         do {
             try await center.requestAuthorization(for: .individual)
@@ -230,14 +213,14 @@ class ScreenTimeManager: ObservableObject {
     func startMonitoring(app:RestrictedApp, goalLimit: Float)-> Bool{
         
         let warning = (Float(app.threshold) - goalLimit) - 0.25
-        print(warning)
+
+        // Check to make sure warning is not less then 0
         if warning < 0 && app.threshold != 0 {
             return false
         }
         let warningMinutes = max(Int(warning * 60), 0)
         let threshold = (Float(app.threshold) - goalLimit)
 
-        
         let activityName = DeviceActivityName("\(app.name)")
         let schedule = DeviceActivitySchedule(intervalStart: DateComponents(hour:0, minute:0),
                                               intervalEnd: DateComponents(hour:23, minute:59),

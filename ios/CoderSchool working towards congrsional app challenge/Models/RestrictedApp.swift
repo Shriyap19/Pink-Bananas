@@ -21,7 +21,13 @@ struct RestrictedApp: Identifiable, Codable, Hashable{
     var currentStreak:Int = 0
     var daysCompleted:Int = 0
     var category: String
+    var timeSaved: [Day] = []
     //let completed: Bool
     //let streak: Int
 }
 
+struct Day: Identifiable, Codable, Hashable{
+    var date: Date = Date() // Current Day
+    var time: Int // Time Saved
+    var id: Date {date}
+}

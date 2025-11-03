@@ -35,6 +35,8 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
         if wasFullfilled == nil {
             UserDefaults(suiteName: "group.com.tcsm.orangeteamproject")?.set(true, forKey:"goal_\(activity.rawValue)")
         }
+        
+        UserDefaults(suiteName: "group.com.tcsm.orangeteamproject")?.set(true,forKey: "dayChange_\(activity.rawValue)")
     }
     
     override func eventDidReachThreshold(_ event: DeviceActivityEvent.Name, activity: DeviceActivityName) {
